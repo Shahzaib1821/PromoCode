@@ -1,4 +1,4 @@
-@extends('layouts.plan')
+@extends('backend.layouts.plan')
 
 @section('content')
     <div class="account-pages pt-sm-5">
@@ -89,8 +89,6 @@
                                 <div class="mt-5 text-center">
 
                                     <div>
-                                        <p>Don't have an account ? <a href={{ route('register') }}
-                                                class="fw-medium text-primary"> Signup now </a> </p>
                                         <p>© All Right Reserved By <i class="mdi mdi-heart text-danger"></i> The Ridgeline Marketing</p>
                                     </div>
                                 </div>

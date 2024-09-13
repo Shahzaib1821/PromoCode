@@ -14,12 +14,12 @@ class AdminUserController extends Controller
     {
         // Fetch users with role 'admin' and not deleted
         $users = User::where('role', 'admin')->where('is_deleted', 0)->get();
-        return view('backend.users.admin.index', compact('users'));
+        return view('backend.pages.users.admin.index', compact('users'));
     }
 
     public function create()
     {
-        return view('backend.users.admin.create');
+        return view('backend.pages.users.admin.create');
     }
 
     public function store(Request $request)
@@ -43,7 +43,7 @@ class AdminUserController extends Controller
     {
         $user = User::findOrFail($id);
         // to get acutal password instead of hashed passwrod
-        return view('backend.users.admin.edit', compact('user'));
+        return view('backend.pages.users.admin.edit', compact('user'));
     }
 
     public function update(Request $request, $id)

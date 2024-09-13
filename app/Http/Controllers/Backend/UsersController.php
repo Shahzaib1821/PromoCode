@@ -12,12 +12,12 @@ class UsersController extends Controller
     public function index()
     {
         $users = User::where('role', 'user')->get();
-        return view('backend.users.index', compact('users'));
+        return view('backend.pages.users.index', compact('users'));
     }
 
     public function create()
     {
-        return view('backend.users.create');
+        return view('backend.pages.users.create');
     }
 
     public function store(Request $request)
@@ -39,7 +39,7 @@ class UsersController extends Controller
     public function edit($id)
     {
         $user = User::find($id);
-        return view('backend.users.edit', compact('user'));
+        return view('backend.pages.users.edit', compact('user'));
     }
 
     public function update(Request $request, $id)

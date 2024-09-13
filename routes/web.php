@@ -1,35 +1,29 @@
 <?php
 
-use App\Http\Controllers\Backend\AdminUserController;
-use App\Http\Controllers\Backend\UsersController;
-use App\Http\Controllers\BackendController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Frontend\PagesController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth')->group(function () {
-    Route::get('/', [BackendController::class, 'dashboard'])->name('dashboard');
-    Route::get('/dashboard', [BackendController::class, 'dashboard'])->name('dashboard');
 
-    Route::get('/adminUser', [AdminUserController::class, 'index'])->name('adminUser.index');
-    Route::get('adminUser/create', [AdminUserController::class, 'create'])->name('adminUser.create');
-    Route::post('adminUser/store', [AdminUserController::class, 'store'])->name('adminUser.store');
-    Route::get('/adminUser/{id}/edit', [AdminUserController::class, 'edit'])->name('adminUser.edit');
-    Route::put('/adminUser/{id}', [AdminUserController::class, 'update'])->name('adminUser.update');
-    Route::delete('/adminUser/{id}', [AdminUserController::class, 'destroy'])->name('adminUser.destroy');
-
-    Route::get('/users', [UsersController::class, 'index'])->name('users.index');
-    Route::get('users/create', [UsersController::class, 'create'])->name('users.create');
-    Route::post('users/store', [UsersController::class, 'store'])->name('users.store');
-    Route::get('/users/{menu}/edit', [UsersController::class, 'edit'])->name('users.edit');
-    Route::put('/users/{menu}', [UsersController::class, 'update'])->name('users.update');
-    Route::delete('/users/{menu}', [UsersController::class, 'destroy'])->name('users.destroy');
-});
-
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+Route::get('/', [PagesController::class, 'home'])->name('home');
+Route::get('/categories', [PagesController::class, 'category'])->name('categories');
+Route::get('/stores', [PagesController::class, 'store'])->name('stores');
+Route::get('/store/{slug}', [PagesController::class, 'storeDetail'])->name('stores-details');
+// Route::get('/coupons', [PagesController::class, 'index'])->name('coupons');
+// Route::get('/blogs', [PagesController::class, 'index'])->name('blogs');
+// Route::get('/about', [PagesController::class, 'about'])->name('about');
+// Route::get('/saving-tips', [PagesController::class, 'savingTips'])->name('saving-tips');
+// Route::get('/write-for-us', [PagesController::class, 'writeForUs'])->name('write-for-us');
+// Route::get('/privacy-policy', [PagesController::class, 'privacyPolicy'])->name('privacy-policy');
+// Route::get('/terms-and-conditions', [PagesController::class, 'termsConditions'])->name('terms-conditions');
+// Route::get('/faq', [PagesController::class, 'faq'])->name('faq');
+// Route::get('/shipping', [PagesController::class, 'shipping'])->name('shipping');
+// Route::get('/returns', [PagesController::class, 'returns'])->name('returns');
+// Route::get('/order-status', [PagesController::class, 'orderStatus'])->name('order-status');
+// Route::get('/payment-options', [PagesController::class, 'paymentOptions'])->name('payment-options');
+// Route::get('/download', [PagesController::class, 'download'])->name('download');
+// Route::get('/changelog', [PagesController::class, 'changelog'])->name('changelog');
+// Route::get('/github', [PagesController::class, 'github'])->name('github');
+// Route::get('/all-versions', [PagesController::class, 'allVersions'])->name('all-versions');
 
 require __DIR__.'/auth.php';
+require __DIR__.'/backend.php';

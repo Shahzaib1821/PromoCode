@@ -1,4 +1,4 @@
-@extends('layouts.plan')
+@extends('backend.layouts.plan')
 
 @section('content')
     <div class="account-pages pt-sm-5">
