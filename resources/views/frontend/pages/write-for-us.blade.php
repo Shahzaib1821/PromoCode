@@ -1,4 +1,6 @@
-<?php include 'includes/header.php'; ?>
+@extends('frontend.layouts.app')
+
+@section('content')
 
 <div class="container">
     <section class="section">
@@ -118,39 +120,14 @@
         <div class="stores text-center mt-4">
             <h3 class="mb-3 fw-bold">Popular Stores</h3>
             <ul class="p-0 list-unstyled stores_info">
-                <li class="border-1 p-2 bg-light shadow-sm rounded-2 mb-3">
-                    <a href="#" class="text-decoration-none text-dark fs-6">HalloweenExpress</a>
-                </li>
-                <li class="border-1 p-2 bg-light shadow-sm rounded-2 mb-3">
-                    <a href="#" class="text-decoration-none text-dark fs-6">Tiff'sTreats</a>
-                </li>
-                <li class="border-1 p-2 bg-light shadow-sm rounded-2 mb-3">
-                    <a href="#" class="text-decoration-none text-dark fs-6">Walmart</a>
-                </li>
-                <li class="border-1 p-2 bg-light shadow-sm rounded-2 mb-3">
-                    <a href="#" class="text-decoration-none text-dark fs-6">Target</a>
-                </li>
-                <li class="border-1 p-2 bg-light shadow-sm rounded-2 mb-3">
-                    <a href="#" class="text-decoration-none text-dark fs-6">Valvoline</a>
-                </li>
-                <li class="border-1 p-2 bg-light shadow-sm rounded-2 mb-3">
-                    <a href="#" class="text-decoration-none text-dark fs-6">YouTubeTv</a>
-                </li>
-                <li class="border-1 p-2 bg-light shadow-sm rounded-2 mb-3">
-                    <a href="#" class="text-decoration-none text-dark fs-6">Crumblcookies</a>
-                </li>
-                <li class="border-1 p-2 bg-light shadow-sm rounded-2 mb-3">
-                    <a href="#" class="text-decoration-none text-dark fs-6">BedBath</a>
-                </li>
-                <li class="border-1 p-2 bg-light shadow-sm rounded-2 mb-3">
-                    <a href="#" class="text-decoration-none text-dark fs-6">Take5Oil</a>
-                </li>
-                <li class="border-1 p-2 bg-light shadow-sm rounded-2 mb-3">
-                    <a href="#" class="text-decoration-none text-dark fs-6">Amazon</a>
-                </li>
+                @foreach ($popularStores as $store)
+                    <li class="border-1 p-2 bg-light shadow-sm rounded-2 mb-3">
+                        <a href="{{ $store->website }}"
+                            class="text-decoration-none text-dark fs-6">{{ $store->name }}</a>
+                    </li>
+                @endforeach
             </ul>
         </div>
     </section>
 </div>
-
-<?php include 'includes/footer.php'; ?>
+@endsection

@@ -16,7 +16,7 @@
                     <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
                 </div>
             </div>
-            {{-- <div class="col-lg-2 footer-col">
+            <div class="col-lg-2 footer-col">
                 <h4>Company</h4>
                 <ul class="p-0">
                     <li><a href="{{ route('about') }}">About Us</a></li>
@@ -29,22 +29,22 @@
             <div class="col-lg-2 footer-col">
                 <h4>Get Help</h4>
                 <ul class="p-0">
-                    <li><a href="{{ route('faq') }}">FAQ</a></li>
+                    {{-- <li><a href="{{ route('faq') }}">FAQ</a></li>
                     <li><a href="{{ route('shipping') }}">Shipping</a></li>
                     <li><a href="{{ route('returns') }}">Returns</a></li>
                     <li><a href="{{ route('order-status') }}">Order Status</a></li>
-                    <li><a href="{{ route('payment-options') }}">Payment Options</a></li>
+                    <li><a href="{{ route('payment-options') }}">Payment Options</a></li> --}}
                 </ul>
             </div>
             <div class="col-lg-2 footer-col">
                 <h4>Online Shop</h4>
                 <ul class="p-0">
-                    <li><a href="{{ route('download') }}">Download</a></li>
+                    {{-- <li><a href="{{ route('download') }}">Download</a></li>
                     <li><a href="{{ route('changelog') }}">Changelog</a></li>
                     <li><a href="{{ route('github') }}">GitHub</a></li>
-                    <li><a href="{{ route('all-versions') }}">All Versions</a></li>
+                    <li><a href="{{ route('all-versions') }}">All Versions</a></li> --}}
                 </ul>
-            </div> --}}
+            </div>
         </div>
     </div>
 </footer>

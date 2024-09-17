@@ -49,8 +49,9 @@
                                             <strong>{{ $message }}</strong>
                                         </span>
                                     @enderror
-                                    @if($store->image)
-                                        <img src="{{ asset('uploads/stores/' . $store->image) }}" alt="Current Image" class="mt-2" style="max-width: 200px;">
+                                    @if ($store->image)
+                                        <img src="{{ asset('uploads/stores/' . $store->image) }}" alt="Current Image"
+                                            class="mt-2" style="max-width: 200px;">
                                     @endif
                                 </div>
                             </div>
@@ -74,12 +75,42 @@
                                     <label for="category-select">Category :</label>
                                     <select name="category_id" id="category-select" class="form-control" required>
                                         @foreach ($categories as $category)
-                                            <option value="{{ $category->id }}" {{ $store->category_id == $category->id ? 'selected' : '' }}>
+                                            <option value="{{ $category->id }}"
+                                                {{ $store->category_id == $category->id ? 'selected' : '' }}>
                                                 {{ $category->name }}
                                             </option>
                                         @endforeach
                                     </select>
                                     @error('category_id')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Website Input Field for Edit Page -->
+                            <div class="col-lg-6">
+                                <div class="form-group mb-4">
+                                    <label for="website">Website URL :</label>
+                                    <input type="url" class="form-control @error('website') is-invalid @enderror"
+                                        id="website" name="website" value="{{ old('website', $store->website) }}"
+                                        placeholder="Enter Store Website URL" required>
+                                    @error('website')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Video Iframe Input Field for Edit Page -->
+                            <div class="col-lg-12">
+                                <div class="form-group mb-4">
+                                    <label for="video-iframe">Video Embed Code (Iframe) :</label>
+                                    <textarea class="form-control @error('video') is-invalid @enderror" id="video-iframe" name="video"
+                                        placeholder="Paste the iframe embed code for the video here" rows="3">{{ old('video', $store->video) }}</textarea>
+                                    @error('video')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
@@ -113,11 +144,12 @@
                                 </div>
                                 <div class="form-check form-check-inline">
                                     <input type="checkbox" class="form-check-input" id="popular-stores"
-                                        name="popular_stores" value="1" {{ $store->popular_stores ? 'checked' : '' }}>
+                                        name="popular_stores" value="1"
+                                        {{ $store->popular_stores ? 'checked' : '' }}>
                                     <label class="form-check-label" for="popular-stores">Popular Stores</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input type="checkbox" class="form-check-input" id="status" name="status"
+                                    <input type="checkbox" class="form-check-input" name="status"
                                         value="1" {{ $store->status ? 'checked' : '' }}>
                                     <label class="form-check-label" for="status">Status</label>
                                 </div>
@@ -128,14 +160,18 @@
                                     <label>FAQs :</label>
                                     <div id="faqs-container">
                                         @php
-                                            $faqs = is_string($store->faqs) ? json_decode($store->faqs, true) : $store->faqs;
+                                            $faqs = is_string($store->faqs)
+                                                ? json_decode($store->faqs, true)
+                                                : $store->faqs;
                                             $faqs = is_array($faqs) ? $faqs : [];
                                         @endphp
-                                        @foreach($faqs as $index => $faq)
+                                        @foreach ($faqs as $index => $faq)
                                             <div class="faq-item mb-3">
-                                                <input type="text" class="form-control mb-2" name="faqs[{{ $index }}][question]"
-                                                    placeholder="Question" required value="{{ $faq['question'] ?? '' }}">
-                                                <textarea class="form-control" name="faqs[{{ $index }}][answer]" placeholder="Answer" rows="3" required>{{ $faq['answer'] ?? '' }}</textarea>
+                                                <input type="text" class="form-control mb-2"
+                                                    name="faqs[{{ $index }}][question]" placeholder="Question"
+                                                    required value="{{ $faq['question'] ?? '' }}">
+                                                <textarea class="form-control" name="faqs[{{ $index }}][answer]" placeholder="Answer" rows="3"
+                                                    required>{{ $faq['answer'] ?? '' }}</textarea>
                                             </div>
                                         @endforeach
                                     </div>
@@ -166,7 +202,9 @@
                                         <label for="meta-keywords">Meta Keywords</label>
                                         @php
                                             // Decode the JSON if it's a string, otherwise, keep it as an array
-                                            $meta_keywords = is_string($store->meta_keywords) ? json_decode($store->meta_keywords, true) : $store->meta_keywords;
+                                            $meta_keywords = is_string($store->meta_keywords)
+                                                ? json_decode($store->meta_keywords, true)
+                                                : $store->meta_keywords;
                                             $meta_keywords = is_array($meta_keywords) ? $meta_keywords : [];
                                         @endphp
                                         <input type="text"
@@ -200,9 +238,8 @@
                                 <div class="col-lg-6">
                                     <div class="form-group mb-4">
                                         <label for="savings-title">Savings</label>
-                                        <input type="text"
-                                            class="form-control @error('savings') is-invalid @enderror" id="savings-title"
-                                            name="savings" placeholder="Enter Saving" required
+                                        <input type="text" class="form-control @error('savings') is-invalid @enderror"
+                                            id="savings-title" name="savings" placeholder="Enter Saving" required
                                             value="{{ old('savings', $store->savings) }}">
                                         @error('savings')
                                             <span class="invalid-feedback" role="alert">
@@ -215,8 +252,8 @@
                                     <div class="form-group mb-4">
                                         <label for="discount-title">Discounted Price</label>
                                         <input type="text"
-                                            class="form-control @error('discount') is-invalid @enderror" id="discount-title"
-                                            name="discount" placeholder="Enter Discount" required
+                                            class="form-control @error('discount') is-invalid @enderror"
+                                            id="discount-title" name="discount" placeholder="Enter Discount" required
                                             value="{{ old('discount', $store->discount) }}">
                                         @error('discount')
                                             <span class="invalid-feedback" role="alert">
@@ -229,8 +266,12 @@
                                     <div class="form-group mb-4">
                                         <label for="free-shipping-title">Free Shipping</label>
                                         <select name="free_shipping" class="form-select">
-                                            <option value="Yes" {{ old('free_shipping', $store->free_shipping) == 'Yes' ? 'selected' : '' }}>Yes</option>
-                                            <option value="No" {{ old('free_shipping', $store->free_shipping) == 'No' ? 'selected' : '' }}>No</option>
+                                            <option value="Yes"
+                                                {{ old('free_shipping', $store->free_shipping) == 'Yes' ? 'selected' : '' }}>
+                                                Yes</option>
+                                            <option value="No"
+                                                {{ old('free_shipping', $store->free_shipping) == 'No' ? 'selected' : '' }}>
+                                                No</option>
                                         </select>
                                         @error('free_shipping')
                                             <span class="invalid-feedback" role="alert">
@@ -262,9 +303,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize Summernote editors
-            $('#meta-description').summernote({
-                height: 200,
-            });
+            // $('#meta-description').summernote({
+            //     height: 200,
+            // });
             $('#description-textarea').summernote({
                 height: 200,
             });
@@ -288,5 +329,5 @@
                 faqCount++;
             });
         });
-        </script>
+    </script>
 @endsection

@@ -30,7 +30,7 @@
                             id="{{ $category->slug }}" role="tabpanel" aria-labelledby="{{ $category->slug }}-tab">
                             <h3 class="mb-4">{{ $category->name }} Stores</h3>
                             <div class="row">
-                                @foreach ($stores->where('category_id', $category->id) as $store)
+                                @forelse ($stores->where('category_id', $category->id) as $store)
                                     <div class="col-lg-3 col-md-4 col-sm-6">
                                         <a href="{{ route('stores-details', ['slug' => $store->slug]) }}">
                                             <div class="card p-0 card-horizontal">
@@ -42,7 +42,9 @@
                                             </div>
                                         </a>
                                     </div>
-                                @endforeach
+                                @empty
+                                    <p class="text-center">No stores found in this category.</p>
+                                @endforelse
                             </div>
                         </div>
                     @endforeach

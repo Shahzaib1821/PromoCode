@@ -98,6 +98,25 @@
                         </ul>
                     </li>
 
+                    <li>
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="fa fa-users"></i>
+                            <span key="t-dashboards">Blogs</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            <li>
+                                <a href="{{ route('blogs.create') }}" class="waves-effect">
+                                    <span>Add Blog</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('blogs.index') }}" class="waves-effect">
+                                    <span>Manage Blogs</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
                 </ul>
             @elseif ($userRole == 'user')
                 {{-- for user  --}}

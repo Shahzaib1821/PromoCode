@@ -1,30 +1,101 @@
 @extends('backend.layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Edit Category</h1>
-    <form action="{{ route('categories.update', $category->id) }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        @method('PUT')
-        <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" name="name" id="name" class="form-control" value="{{ $category->name }}" required>
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">{{ isset($category) ? 'Edit Category' : 'Add New Category' }}</h4>
+
+                    <form
+                        action="{{ isset($category) ? route('categories.update', $category->id) : route('categories.store') }}"
+                        method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @if (isset($category))
+                            @method('PUT')
+                        @endif
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group mb-4">
+                                    <label for="name">Name :</label>
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                        id="name" name="name" placeholder="Enter category name"
+                                        value="{{ old('name', isset($category) ? $category->name : '') }}">
+                                    @error('name')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group mb-4">
+                                    <label for="status">Status :</label>
+                                    <select class="form-select @error('status') is-invalid @enderror" name="status">
+                                        <option value="1"
+                                            {{ old('status', isset($category) ? $category->status : '1') == '1' ? 'selected' : '' }}>
+                                            Active</option>
+                                        <option value="0"
+                                            {{ old('status', isset($category) ? $category->status : '1') == '0' ? 'selected' : '' }}>
+                                            Inactive</option>
+                                    </select>
+                                    @error('status')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group mb-4">
+                                    <label for="image">Image :</label>
+                                    <input type="file" class="form-control @error('image') is-invalid @enderror"
+                                        id="image" name="image">
+                                    @if (isset($category) && $category->image)
+                                        <img src="{{ asset('storage/' . $category->image) }}" alt="Category Image"
+                                            class="img-fluid mt-2" style="max-height: 200px;">
+                                    @endif
+                                    @error('image')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row justify-content-end">
+                            <div class="col-sm-12">
+                                <div>
+                                    <button type="submit" class="btn btn-primary w-md">Save</button>
+                                    <a href="{{ route('categories.index') }}" class="btn btn-secondary w-md">Cancel</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="status">Status</label>
-            <select name="status" id="status" class="form-control">
-                <option value="1" {{ $category->status ? 'selected' : '' }}>Active</option>
-                <option value="0" {{ !$category->status ? 'selected' : '' }}>Inactive</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="image">Image</label>
-            <input type="file" name="image" id="image" class="form-control">
-            @if($category->image)
-                <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}" style="width: 100px; margin-top: 10px;">
-            @endif
-        </div>
-        <button type="submit" class="btn btn-primary">Update</button>
-    </form>
-</div>
+    </div>
+@endsection
+
+@section('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#meta-description').summernote({
+                height: 200,
+            });
+            $('#meta-keywords').select2({
+                tags: true,
+                tokenSeparators: [',', ' ']
+            });
+        });
+    </script>
 @endsection

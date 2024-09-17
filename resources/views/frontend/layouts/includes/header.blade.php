@@ -17,7 +17,7 @@
                     <a class="nav-link text-white" href="{{ route('stores') }}">Store</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="#">Blogs</a>
+                    <a class="nav-link text-white" href="{{route('blogs')}}">Blogs</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white" href="{{ route('categories')}}">Categories</a>
@@ -26,7 +26,8 @@
         </div>
         <div class="search-box">
             <button class="btn-search"><i class="fas fa-search"></i></button>
-            <input type="text" class="input-search" placeholder="TYPE TO SEARCH">
+            <input type="text" class="input-search" id="live-search" placeholder="TYPE TO SEARCH">
+            <div id="search-results" class="search-results-dropdown"></div>
         </div>
     </div>
 </nav>

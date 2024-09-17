@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Backend\AdminUserController;
 use App\Http\Controllers\Backend\BackendController;
+use App\Http\Controllers\Backend\BlogsController;
 use App\Http\Controllers\Backend\CategoryController;
 use App\Http\Controllers\backend\CouponController;
 use App\Http\Controllers\Backend\StoreController;
@@ -33,5 +34,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('store', StoreController::class);
 
         Route::resource('coupons', CouponController::class);
+
+        Route::resource('blogs', BlogsController::class);
     });
 });

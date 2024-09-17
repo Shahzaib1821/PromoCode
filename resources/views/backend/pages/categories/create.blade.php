@@ -30,20 +30,6 @@
                                 </div>
                             </div>
 
-                            {{-- <div class="col-lg-6">
-                                <div class="form-group mb-4">
-                                    <label for="slug">Slug :</label>
-                                    <input type="text" class="form-control @error('slug') is-invalid @enderror"
-                                        id="slug" name="slug" placeholder="Enter category slug"
-                                        value="{{ old('slug', isset($category) ? $category->slug : '') }}">
-                                    @error('slug')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div> --}}
-
                             <div class="col-lg-6">
                                 <div class="form-group mb-4">
                                     <label for="status">Status :</label>

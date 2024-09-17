@@ -23,6 +23,7 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Store Image</th>
+                                    <th>Store Website</th>
                                     <th>Description</th>
                                     <th>Category</th>
                                     <th>Actions</th>
@@ -33,6 +34,7 @@
                                     <tr>
                                         <td>{{ $store->name }}</td>
                                         <td><img src="{{ asset('uploads/stores/'. $store->image) }}" width="100px" alt=""></td>
+                                        <td>{{ $store->website }}</td>
                                         <td class="text-wrap">{{ Str::limit(strip_tags($store->description), 110) }}</td>
                                         <td>{{ optional($store->category)->name ?? 'No Category' }}</td>
                                         <td>

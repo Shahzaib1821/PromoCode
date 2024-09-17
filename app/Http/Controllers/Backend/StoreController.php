@@ -52,6 +52,8 @@ class StoreController extends Controller
             'savings' => 'nullable|string|max:255',
             'discount' => 'nullable|string|max:255',
             'free_shipping' => 'nullable|string|max:255',
+            'website' => 'nullable|url|max:255',
+            'video' => 'nullable|string',
         ]);
 
         try {
@@ -70,6 +72,8 @@ class StoreController extends Controller
             $validatedData['top_brands'] = $request->has('top_brands');
             $validatedData['popular_stores'] = $request->has('popular_stores');
             $validatedData['status'] = $request->has('status');
+            $validatedData['website'] = $request->input('website');
+            $validatedData['video'] = $request->input('video');
 
             $store = Store::create($validatedData);
 
@@ -92,72 +96,76 @@ class StoreController extends Controller
     }
 
     public function update(Request $request, Store $store)
-{
-    $validatedData = $request->validate([
-        'name' => 'required|string|max:255',
-        'slug' => 'required|string|max:255|unique:stores,slug,' . $store->id,
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'tagline' => 'required|string|max:255',
-        'category_id' => 'required|exists:categories,id',
-        'description' => 'required|string',
-        'top_stores' => 'boolean',
-        'top_brands' => 'boolean',
-        'popular_stores' => 'boolean',
-        'status' => 'boolean',
-        'faqs' => 'nullable|array',
-        'faqs.*.question' => 'required|string',
-        'faqs.*.answer' => 'required|string',
-        'meta_title' => 'required|string|max:255',
-        'meta_description' => 'required|string',
-        'meta_keywords' => 'required|string',
-        'savings' => 'nullable|string|max:255',
-        'discount' => 'nullable|string|max:255',
-        'free_shipping' => 'nullable|string|max:255',
-    ]);
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:stores,slug,' . $store->id,
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'tagline' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'description' => 'required|string',
+            'top_stores' => 'boolean',
+            'top_brands' => 'boolean',
+            'popular_stores' => 'boolean',
+            'status' => 'boolean',
+            'faqs' => 'nullable|array',
+            'faqs.*.question' => 'required|string',
+            'faqs.*.answer' => 'required|string',
+            'meta_title' => 'required|string|max:255',
+            'meta_description' => 'required|string',
+            'meta_keywords' => 'required|string',
+            'savings' => 'nullable|string|max:255',
+            'discount' => 'nullable|string|max:255',
+            'free_shipping' => 'nullable|string|max:255',
+            'website' => 'nullable|url|max:255',
+            'video' => 'nullable|string',
+        ]);
 
-    try {
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            if ($store->image) {
-                if (file_exists(public_path($store->image))) {
-                    unlink(public_path($store->image));
+        try {
+            // Handle image upload
+            if ($request->hasFile('image')) {
+                if ($store->image) {
+                    if (file_exists(public_path($store->image))) {
+                        unlink(public_path($store->image));
+                    }
                 }
+                $image = $request->file('image');
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('uploads/stores'), $imageName);
+                $validatedData['image'] = $imageName;
             }
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('uploads/stores'), $imageName);
-            $validatedData['image'] = $imageName;
+
+            // Process boolean fields
+            $validatedData['top_stores'] = $request->has('top_stores');
+            $validatedData['top_brands'] = $request->has('top_brands');
+            $validatedData['popular_stores'] = $request->has('popular_stores');
+            $validatedData['status'] = $request->has('status');
+            $validatedData['website'] = $request->input('website');
+            $validatedData['video'] = $request->input('video');
+
+            // Process FAQs
+            if (isset($validatedData['faqs'])) {
+                $validatedData['faqs'] = json_encode($validatedData['faqs']);
+            } else {
+                $validatedData['faqs'] = null;
+            }
+
+            // Process meta keywords
+            $validatedData['meta_keywords'] = json_encode(explode(',', $validatedData['meta_keywords']));
+
+            // Update the store
+            $store->update($validatedData);
+
+            return redirect()->route('store.index')->with('success', 'Store updated successfully.');
+        } catch (\Exception $e) {
+            // If an error occurs and a new image was uploaded, delete it
+            if (isset($imagePath) && Storage::disk('public')->exists($imagePath)) {
+                Storage::disk('public')->delete($imagePath);
+            }
+
+            return redirect()->back()->withInput()->with('error', 'An error occurred while updating the store. Please try again.');
         }
-
-        // Process boolean fields
-        $validatedData['top_stores'] = $request->has('top_stores');
-        $validatedData['top_brands'] = $request->has('top_brands');
-        $validatedData['popular_stores'] = $request->has('popular_stores');
-        $validatedData['status'] = $request->has('status');
-
-        // Process FAQs
-        if (isset($validatedData['faqs'])) {
-            $validatedData['faqs'] = json_encode($validatedData['faqs']);
-        } else {
-            $validatedData['faqs'] = null;
-        }
-
-        // Process meta keywords
-        $validatedData['meta_keywords'] = json_encode(explode(',', $validatedData['meta_keywords']));
-
-        // Update the store
-        $store->update($validatedData);
-
-        return redirect()->route('store.index')->with('success', 'Store updated successfully.');
-    } catch (\Exception $e) {
-        // If an error occurs and a new image was uploaded, delete it
-        if (isset($imagePath) && Storage::disk('public')->exists($imagePath)) {
-            Storage::disk('public')->delete($imagePath);
-        }
-
-        return redirect()->back()->withInput()->with('error', 'An error occurred while updating the store. Please try again.');
     }
-}
     public function destroy($id)
     {
         $store = Store::findOrFail($id);

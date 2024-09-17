@@ -26,7 +26,9 @@ class Store extends Model
         'meta_keywords',
         'savings',
         'discount',
-        'free_shipping'
+        'free_shipping',
+        'website',
+        'video'
     ];
 
     protected $casts = [

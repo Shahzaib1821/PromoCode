@@ -37,7 +37,7 @@
                                         <td>
                                             @if ($category->image)
                                                 <img src="{{ asset('storage/' . $category->image) }}"
-                                                    alt="{{ $category->name }}" style="width: 100px;">
+                                                    alt="{{ $category->name }}" style="width: 100px;" class="bg-black">
                                             @endif
                                         </td>
                                         <td>

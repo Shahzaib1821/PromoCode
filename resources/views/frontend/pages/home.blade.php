@@ -55,7 +55,7 @@
                             @foreach ($categories as $category)
                                 <a href="{{ route('categories', ['active' => $category->slug]) }}" class="category">
                                     <div class="category-image">
-                                        <img src="{{ asset('storage/' . $category->image) }}" class="img-fluid mb-2 rounded"
+                                        <img src="{{ asset('storage/' . $category->image) }}" class="img-fluid rounded"
                                             alt="{{ $category->name }}">
                                     </div>
                                     <div class="category-name">
@@ -82,7 +82,7 @@
             </div>
         </div>
     </section>
-    
+
     <div class="container">
         <div class="wrapper pb-0">
 
@@ -116,7 +116,10 @@
             <section class="section categories">
                 <div class="row">
                     <div class="col-lg-12">
-                        <img src="{{ asset('frontend/assets/img/banners/Cta.png') }}" class="w-100" alt="">
+                        <img src="{{ asset('frontend/assets/img/banners/Cta.png') }}" class="w-100 desktop" style="dynamic"
+                            alt="">
+                        <img src="{{ asset('frontend/assets/img/banners/PhoneCta.webp') }}" class="w-100 mobile"
+                            style="dynamic" alt="">
                     </div>
                 </div>
             </section>

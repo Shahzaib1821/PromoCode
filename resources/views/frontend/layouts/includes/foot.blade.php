@@ -16,3 +16,4 @@
 
 <!-- Your custom scripts -->
 <script src="{{ asset('frontend/assets/main.js') }}"></script>
+<script src="{{ asset('frontend/assets/live-search.js') }}"></script>

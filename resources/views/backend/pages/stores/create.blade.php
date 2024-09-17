@@ -65,12 +65,38 @@
                             <div class="col-lg-6">
                                 <div class="form-group mb-4">
                                     <label for="category-select">Category :</label>
-                                    <select name="category_id" id="category-select" class="form-control" required>
+                                    <select name="category_id" id="category-select" class="form-select" required>
                                         @foreach ($categories as $category)
                                             <option value="{{ $category->id }}">{{ $category->name }}</option>
                                         @endforeach
                                     </select>
                                     @error('category_id')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group mb-4">
+                                    <label for="website-input">Website URL:</label>
+                                    <input type="url" class="form-control @error('website') is-invalid @enderror"
+                                        id="website-input" name="website" placeholder="Enter Store Website">
+                                    @error('website')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <div class="form-group mb-4">
+                                    <label for="video-iframe">Video Embed Code (Iframe) :</label>
+                                    <textarea class="form-control @error('video') is-invalid @enderror" id="video-iframe" name="video"
+                                        placeholder="Paste the iframe embed code for the video here" rows="3">{{ old('video') }}</textarea>
+                                    @error('video')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
@@ -178,9 +204,8 @@
                                 <div class="col-lg-6">
                                     <div class="form-group mb-4">
                                         <label for="savings-title">Savings</label>
-                                        <input type="text"
-                                            class="form-control @error('savings') is-invalid @enderror" id="savings-title"
-                                            name="savings" placeholder="Enter Saving" required>
+                                        <input type="text" class="form-control @error('savings') is-invalid @enderror"
+                                            id="savings-title" name="savings" placeholder="Enter Saving" required>
                                         @error('savings')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
@@ -192,8 +217,8 @@
                                     <div class="form-group mb-4">
                                         <label for="discount-title">Discounted Price</label>
                                         <input type="text"
-                                            class="form-control @error('discount') is-invalid @enderror" id="discount-title"
-                                            name="discount" placeholder="Enter Discount" required>
+                                            class="form-control @error('discount') is-invalid @enderror"
+                                            id="discount-title" name="discount" placeholder="Enter Discount" required>
                                         @error('discount')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
@@ -205,13 +230,10 @@
                                 <div class="col-lg-6">
                                     <div class="form-group mb-4">
                                         <label for="free-shipping-title">Free Shipping</label>
-                                        {{-- <input type="text"
-                                            class="form-control @error('free_shipping') is-invalid @enderror" id="free-shipping-title"
-                                            name="free_shipping" placeholder="Enter Free Shipping" required> --}}
-                                            <select name="free_shipping">
-                                                <option value="Yes" selected="selected">Yes</option>
-                                                <option value="No">No</option>
-                                            </select>
+                                        <select name="free_shipping" class="form-select">
+                                            <option value="Yes" selected="selected">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
                                         @error('free_shipping')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
