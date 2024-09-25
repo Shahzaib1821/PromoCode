@@ -126,6 +126,19 @@
                                 </div>
                             </div>
 
+                            <div class="col-lg-6">
+                                <div class="form-group mb-4">
+                                    <label for="sort_order">Sort Order:</label>
+                                    <input type="number" class="form-control @error('sort_order') is-invalid @enderror"
+                                        id="sort_order" name="sort_order" value="{{ old('sort_order', $coupon->sort_order ?? 0) }}" min="0" required>
+                                    @error('sort_order')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
                             <div class="col-lg-12">
                                 <div class="form-group mb-4">
                                     <label for="description-textarea">Description :</label>

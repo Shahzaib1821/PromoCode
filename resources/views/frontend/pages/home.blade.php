@@ -26,7 +26,7 @@
                             @foreach (range(1, 8) as $index)
                                 <div class="col-lg-3 col-md-4 col-sm-6">
                                     <div class="card p-0 card-horizontal">
-                                        <img src="{{ asset('frontend/assets/img/deals/1.png') }}"
+                                        <img src="{{ asset('frontend/assets/img/deals/' . $index . (pathinfo('frontend/assets/img/deals/' . $index . '.webp', PATHINFO_EXTENSION) == 'png' ? '.png' : '.webp')) }}"
                                             alt="Store {{ $index }}" class="card-img-top">
                                         <div class="card-body">
                                             <h5 class="card-title">Moroccanoil</h5>
@@ -72,19 +72,21 @@
     </div>
 
     <!-- Sale Banner Section -->
-    <section class="section sale-banner px-0">
-        <div class="sale-banner-img text-center"
-            style="background-image: url('https://img.freepik.com/free-vector/sale-limited-offer-dark-blue-abstract-papercut-background-banner_1340-17129.jpg?size=626&ext=jpg&ga=GA1.1.381309730.1720812878&semt=ais_hybrid');background-repeat: no-repeat; padding: 100px; background-size: cover;">
-            <div class="sale-banner-content">
-                <h4 class="sale-banner-title text-white title">Summer Sale</h4>
-                <p class="sale-banner-description text-white">Up to 50% off on selected items</p>
-                <a href="#" class="btn btn-danger">Shop Now</a>
+    @if ($saleBanner)
+        <section class="section sale-banner px-0">
+            <div class="sale-banner-img text-center">
+                <a href="{{ $saleBanner->link }}">
+                    <img src="{{ asset('storage/' . $saleBanner->desktop_image) }}" class="w-100 desktop"
+                        alt="{{ $saleBanner->title }}">
+                    <img src="{{ asset('storage/' . $saleBanner->mobile_image) }}" class="w-100 mobile"
+                        alt="{{ $saleBanner->title }}">
+                </a>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
 
     <div class="container">
-        <div class="wrapper pb-0">
+        <div class="wrapper pt-0">
 
             <!-- Top Stores Section -->
             <section class="section stores">
@@ -113,16 +115,20 @@
             </section>
 
             <!-- Event Banner Section -->
-            <section class="section categories">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <img src="{{ asset('frontend/assets/img/banners/Cta.png') }}" class="w-100 desktop" style="dynamic"
-                            alt="">
-                        <img src="{{ asset('frontend/assets/img/banners/PhoneCta.webp') }}" class="w-100 mobile"
-                            style="dynamic" alt="">
+            @if ($eventBanner)
+                <section class="section categories">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <a href="{{ $eventBanner->link }}">
+                                <img src="{{ asset('storage/' . $eventBanner->desktop_image) }}" class="w-100 desktop"
+                                    alt="{{ $eventBanner->title }}">
+                                <img src="{{ asset('storage/' . $eventBanner->mobile_image) }}" class="w-100 mobile"
+                                    alt="{{ $eventBanner->title }}">
+                            </a>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            @endif
 
             @include('frontend.components.blogs')
 

@@ -26,6 +26,8 @@
                                     <th>Store</th>
                                     <th>Expiry Date</th>
                                     <th>Status</th>
+                                    <th>Created by</th>
+                                    <th>Updated by</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -35,8 +37,10 @@
                                         <td>{{ $coupon->name }}</td>
                                         <td>{{ $coupon->coupon_code }}</td>
                                         <td>{{ $coupon->store->name }}</td>
-                                        <td>{{ $coupon->expiry_date->format('Y-m-d') }}</td>
+                                        <td>{{ $coupon->expiry_date->format('d-F-Y') }}</td>
                                         <td>{{ $coupon->status ? 'Active' : 'Inactive' }}</td>
+                                        <td>{{ $coupon->creator ? $coupon->creator->name : '' }}</td>
+                                        <td>{{ $coupon->updater ? $coupon->updater->name : '' }}</td>
                                         <td>
                                             <a href="{{ route('coupons.edit', $coupon) }}"
                                                 class="btn btn-soft-info waves-effect waves-light">

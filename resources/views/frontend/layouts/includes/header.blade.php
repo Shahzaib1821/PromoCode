@@ -9,7 +9,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
-            <ul class="navbar-nav gap-2">
+            <ul class="navbar-nav gap-2" id="main-navbar">
                 <li class="nav-item">
                     <a class="nav-link text-white" href="{{ route('home') }}">Home</a>
                 </li>

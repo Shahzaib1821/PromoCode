@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Store;
+use App\Models\SubCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class StoreController extends Controller
@@ -16,7 +18,6 @@ class StoreController extends Controller
         $category = Category::all();
         return view('backend.pages.stores.index', compact('stores'));
     }
-
     public function show($slug)
     {
         $store = Store::where('slug', $slug)->firstOrFail();
@@ -26,7 +27,8 @@ class StoreController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view('backend.pages.stores.create', compact('categories'));
+        $subcategories = SubCategory::all();
+        return view('backend.pages.stores.create', compact('categories', 'subcategories'));
     }
 
     public function store(Request $request)
@@ -36,7 +38,7 @@ class StoreController extends Controller
             'slug' => 'required|string|max:255|unique:stores',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'tagline' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'required|exists:categories,id',
             'description' => 'required|string',
             'top_stores' => 'boolean',
             'top_brands' => 'boolean',
@@ -74,6 +76,7 @@ class StoreController extends Controller
             $validatedData['status'] = $request->has('status');
             $validatedData['website'] = $request->input('website');
             $validatedData['video'] = $request->input('video');
+            $validatedData['created_by'] = Auth::user()->id;
 
             $store = Store::create($validatedData);
 
@@ -92,7 +95,8 @@ class StoreController extends Controller
     {
         $store = Store::findOrFail($id);
         $categories = Category::all();
-        return view('backend.pages.stores.edit', compact('store', 'categories'));
+        $subcategories = SubCategory::all();
+        return view('backend.pages.stores.edit', compact('store', 'categories', 'subcategories'));
     }
 
     public function update(Request $request, Store $store)
@@ -102,7 +106,7 @@ class StoreController extends Controller
             'slug' => 'required|string|max:255|unique:stores,slug,' . $store->id,
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'tagline' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'required|exists:categories,id',
             'description' => 'required|string',
             'top_stores' => 'boolean',
             'top_brands' => 'boolean',
@@ -143,6 +147,9 @@ class StoreController extends Controller
             $validatedData['website'] = $request->input('website');
             $validatedData['video'] = $request->input('video');
 
+            // Only update the updated_by field
+            $validatedData['updated_by'] = Auth::id();
+
             // Process FAQs
             if (isset($validatedData['faqs'])) {
                 $validatedData['faqs'] = json_encode($validatedData['faqs']);
@@ -166,6 +173,7 @@ class StoreController extends Controller
             return redirect()->back()->withInput()->with('error', 'An error occurred while updating the store. Please try again.');
         }
     }
+
     public function destroy($id)
     {
         $store = Store::findOrFail($id);

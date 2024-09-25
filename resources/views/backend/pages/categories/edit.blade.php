@@ -82,20 +82,3 @@
         </div>
     </div>
 @endsection
-
-@section('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <script>
-        $(document).ready(function() {
-            $('#meta-description').summernote({
-                height: 200,
-            });
-            $('#meta-keywords').select2({
-                tags: true,
-                tokenSeparators: [',', ' ']
-            });
-        });
-    </script>
-@endsection

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
@@ -23,8 +24,8 @@ class UsersController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' =>'required|string',
-            'email' =>'required|email|unique:users',
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6',
         ]);
 
@@ -59,7 +60,10 @@ class UsersController extends Controller
     {
         //softdelete
         $user = User::find($id);
-        $user->delete();
+        $user->deleted_by = Auth::id();
+        $user->is_deleted = 1;
+        $user->save();
+
         return redirect()->route('users.index');
     }
 }

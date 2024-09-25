@@ -41,7 +41,7 @@
                                 </a>
                             </div>
                             <div class="p-2">
-                                <form class="form-horizontal" method="POST">
+                                <form class="form-horizontal" method="POST" action="{{route('adminUser.store')}}">
                                     @csrf
                                     <div class="mb-3">
                                         <label for="label-input">Name :</label>
@@ -70,7 +70,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <input type="hidden" name="active" value="1" />
-                                        <input type="hidden" name="role" value="user" />
+                                        <input type="hidden" name="role" value="admin" />
                                     </div>
 
                                     <div class="form-check">

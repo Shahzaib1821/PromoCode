@@ -3,63 +3,32 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Banner;
 use App\Models\Blog;
 use App\Models\Category;
 use App\Models\Coupon;
+use App\Models\Slider;
 use App\Models\Store;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PagesController extends Controller
 {
-    public function footerStores(){
+    public function footerStores()
+    {
         $stores = Store::where('popular_stores', true)->where('status', 1)->get();
         return view('frontend.layouts.includes.footer', compact('stores'));
     }
     public function home()
     {
-        $categories = Category::where('status', 1)->get();
+        $categories = Category::where('status', 1)->take(7)->get();
         $stores = Store::where('status', 1)->get();
         $mainBlog = Blog::where('id', 1)->where('status', 1)->get();
         $blogPosts = Blog::where('top_blog', true)->where('status', 1)->get();
-        return view('frontend.pages.home', compact('categories', 'stores', 'mainBlog', 'blogPosts'));
-    }
-
-
-    public function about()
-    {
-        $popularStores = Store::where('popular_stores', true)->where('status', 1)->get();
-        return view('frontend.pages.about', compact('popularStores'));
-    }
-    public function termsConditions()
-    {
-        $popularStores = Store::where('popular_stores', true)->where('status', 1)->get();
-        return view('frontend.pages.terms-and-conditions', compact('popularStores'));
-    }
-    public function faq()
-    {
-        $popularStores = Store::where('popular_stores', true)->where('status', 1)->get();
-        return view('frontend.pages.terms-and-conditions', compact('popularStores'));
-    }
-    public function shipping()
-    {
-        $popularStores = Store::where('popular_stores', true)->where('status', 1)->get();
-        return view('frontend.pages.terms-and-conditions', compact('popularStores'));
-    }
-
-    public function writeForUs()
-    {
-        // popoluar sotres will be visileon this page
-        $popularStores = Store::where('popular_stores', true)->get();
-
-        return view('frontend.pages.write-for-us', compact('popularStores'));
-    }
-    public function privacyPolicy()
-    {
-        // popoluar sotres will be visileon this page
-        $popularStores = Store::where('popular_stores', true)->get();
-
-        return view('frontend.pages.privacy-policy', compact('popularStores'));
+        $saleBanner = Banner::where('is_active', true)->where('type', 'sale')->first();
+        $eventBanner = Banner::where('is_active', true)->where('type', 'event')->first();
+        $sliders = Slider::all();
+        return view('frontend.pages.home', compact('categories', 'stores', 'mainBlog', 'blogPosts', 'saleBanner', 'eventBanner', 'sliders'));
     }
 
     public function blogs(Request $request)
@@ -91,7 +60,6 @@ class PagesController extends Controller
 
         return view('frontend.pages.blogs', compact('blogs', 'recentBlogs', 'categories', 'archives'));
     }
-
 
     public function blogDetail($slug)
     {
@@ -167,7 +135,6 @@ class PagesController extends Controller
     }
     public function savingTips()
     {
-        // popoluar sotres will be visileon this page
         $popularStores = Store::where('popular_stores', true)->get();
 
         return view('frontend.pages.saving-tips', compact('popularStores'));
@@ -175,12 +142,17 @@ class PagesController extends Controller
 
     public function category(Request $request)
     {
-        $categories = Category::all();
-        $stores = Store::with('category')->get();
+        $categories = Category::with('subcategories')->get(); // Fetch categories with subcategories
+        $stores = Store::with('subcategory')->get(); // Fetch stores with their subcategory
         $activeCategory = $request->query('active') ?: $categories->first()->slug;
 
-        return view('frontend.pages.categories', compact('categories', 'stores', 'activeCategory'));
+        // Fetch the active category object to get subcategories
+        $activeCategoryObject = $categories->firstWhere('slug', $activeCategory);
+        $subcategories = $activeCategoryObject ? $activeCategoryObject->subcategories : [];
+
+        return view('frontend.pages.categories', compact('categories', 'stores', 'activeCategory', 'subcategories'));
     }
+
 
     public function store()
     {
@@ -197,12 +169,18 @@ class PagesController extends Controller
 
         return view('frontend.pages.stores', compact('organizedStores'));
     }
+
     public function storeDetail($slug)
     {
         $store = Store::where('slug', $slug)->where('status', 1)->firstOrFail();
         $popularStores = Store::where('popular_stores', true)->where('status', 1)->get();
-        $categories = Category::where('status', 1)->get();
-        $coupons = $store->coupons->where('status', 1);
+        $categories = Category::where('status', 1)->take(7)->get();
+
+        // Sort coupons by sort_order
+        $coupons = $store->coupons()
+            ->where('status', 1)
+            ->orderBy('sort_order', 'asc')
+            ->get();
 
         $metaTitle = htmlspecialchars($store->meta_title, ENT_QUOTES, 'UTF-8');
         $metaDescription = htmlspecialchars($store->meta_description, ENT_QUOTES, 'UTF-8');
@@ -237,5 +215,66 @@ class PagesController extends Controller
     public function coupons()
     {
         return view('frontend.pages.coupons');
+    }
+
+
+
+    // Footer Pages
+
+
+    public function about()
+    {
+        $popularStores = Store::where('popular_stores', true)->where('status', 1)->get();
+        return view('frontend.pages.about', compact('popularStores'));
+    }
+    public function termsConditions()
+    {
+        $popularStores = Store::where('popular_stores', true)->where('status', 1)->get();
+        return view('frontend.pages.terms-and-conditions', compact('popularStores'));
+    }
+    public function faq()
+    {
+        $popularStores = Store::where('popular_stores', true)->where('status', 1)->get();
+        return view('frontend.pages.terms-and-conditions', compact('popularStores'));
+    }
+    public function shipping()
+    {
+        $popularStores = Store::where('popular_stores', true)->where('status', 1)->get();
+        return view('frontend.pages.terms-and-conditions', compact('popularStores'));
+    }
+
+    public function writeForUs()
+    {
+        $popularStores = Store::where('popular_stores', true)->get();
+
+        return view('frontend.pages.write-for-us', compact('popularStores'));
+    }
+    public function privacyPolicy()
+    {
+        $popularStores = Store::where('popular_stores', true)->get();
+
+        return view('frontend.pages.privacy-policy', compact('popularStores'));
+    }
+
+    public function apiSearch(Request $request)
+    {
+        $query = $request->input('query');
+        $results = [];
+
+        if (strlen($query) >= 2) {
+            $results = Blog::where('name', 'LIKE', "%{$query}%")
+                ->orWhere('short_description', 'LIKE', "%{$query}%")
+                ->take(10)
+                ->get()
+                ->map(function ($blog) {
+                    return [
+                        'id' => $blog->id,
+                        'name' => $blog->name,
+                        'url' => route('blog.detail', $blog->slug)
+                    ];
+                });
+        }
+
+        return response()->json($results);
     }
 }

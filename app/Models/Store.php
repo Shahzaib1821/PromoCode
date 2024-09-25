@@ -14,7 +14,7 @@ class Store extends Model
         'slug',
         'image',
         'tagline',
-        'category_id',
+        'subcategory_id',  // updated this line
         'description',
         'top_stores',
         'top_brands',
@@ -28,7 +28,10 @@ class Store extends Model
         'discount',
         'free_shipping',
         'website',
-        'video'
+        'video',
+        'created_by',
+        'updated_by',
+        'deleted_by',
     ];
 
     protected $casts = [
@@ -39,13 +42,29 @@ class Store extends Model
         'popular_stores' => 'boolean',
         'status' => 'boolean',
     ];
+
+    public function subcategory()
+    {
+        return $this->belongsTo(Subcategory::class);
+    }
+
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->hasOneThrough(Category::class, Subcategory::class, 'id', 'id', 'subcategory_id', 'category_id');
     }
 
     public function coupons()
     {
         return $this->hasMany(Coupon::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

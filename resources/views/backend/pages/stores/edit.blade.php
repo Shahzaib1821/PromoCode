@@ -72,22 +72,23 @@
 
                             <div class="col-lg-6">
                                 <div class="form-group mb-4">
-                                    <label for="category-select">Category :</label>
-                                    <select name="category_id" id="category-select" class="form-control" required>
-                                        @foreach ($categories as $category)
-                                            <option value="{{ $category->id }}"
-                                                {{ $store->category_id == $category->id ? 'selected' : '' }}>
-                                                {{ $category->name }}
+                                    <label for="subcategory-select">Subcategory :</label>
+                                    <select name="subcategory_id" id="subcategory-select" class="form-select" required>
+                                        @foreach ($subcategories as $subcategory)
+                                            <option value="{{ $subcategory->id }}"
+                                                {{ old('subcategory_id', $store->subcategory_id) == $subcategory->id ? 'selected' : '' }}>
+                                                {{ $subcategory->category->name }} > {{ $subcategory->name }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error('category_id')
+                                    @error('subcategory_id')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
                                     @enderror
                                 </div>
                             </div>
+
 
                             <!-- Website Input Field for Edit Page -->
                             <div class="col-lg-6">
@@ -149,8 +150,8 @@
                                     <label class="form-check-label" for="popular-stores">Popular Stores</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input type="checkbox" class="form-check-input" name="status"
-                                        value="1" {{ $store->status ? 'checked' : '' }}>
+                                    <input type="checkbox" class="form-check-input" name="status" value="1"
+                                        {{ $store->status ? 'checked' : '' }}>
                                     <label class="form-check-label" for="status">Status</label>
                                 </div>
                             </div>
@@ -178,7 +179,6 @@
                                     <button type="button" class="btn btn-secondary mt-2" id="add-faq">Add FAQ</button>
                                 </div>
                             </div>
-
 
                             <h4 class="text-dark mb-4">Store Meta Info</h4>
                             <div class="row">
@@ -303,11 +303,13 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize Summernote editors
-            // $('#meta-description').summernote({
-            //     height: 200,
-            // });
+
+            $('#meta-description').summernote({
+                height: 200,
+            });
             $('#description-textarea').summernote({
                 height: 200,
+                fontFamily: 'Poppins',
             });
 
             // Add FAQ functionality with plain JavaScript

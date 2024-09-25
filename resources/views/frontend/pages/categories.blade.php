@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container my-4">
-        <h2 class="mb-5">Browse Stores by Category</h2>
+        <h2 class="mb-5">Browse Stores by Subcategory</h2>
         <div class="row">
             <div class="col-md-3 mb-4">
                 <div class="category-sidebar position-sticky" style="top: 30px;">
@@ -30,21 +30,26 @@
                             id="{{ $category->slug }}" role="tabpanel" aria-labelledby="{{ $category->slug }}-tab">
                             <h3 class="mb-4">{{ $category->name }} Stores</h3>
                             <div class="row">
-                                @forelse ($stores->where('category_id', $category->id) as $store)
-                                    <div class="col-lg-3 col-md-4 col-sm-6">
-                                        <a href="{{ route('stores-details', ['slug' => $store->slug]) }}">
-                                            <div class="card p-0 card-horizontal">
-                                                <img src="{{ asset('uploads/stores/' . $store->image) }}"
-                                                    alt="{{ $store->name }}" class="card-img-top">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">{{ $store->name }}</h5>
-                                                </div>
+                                @foreach ($category->subcategories as $subcategory)
+                                    <div class="row">
+                                        <h6 class="mb-4 text-capitalize">{{ $subcategory->name }} Stores</h6>
+                                        @forelse ($stores->where('subcategory_id', $subcategory->id) as $store)
+                                            <div class="col-lg-3 col-md-4 col-sm-6">
+                                                <a href="{{ route('stores-details', ['slug' => $store->slug]) }}">
+                                                    <div class="card p-0 card-horizontal">
+                                                        <img src="{{ asset('uploads/stores/' . $store->image) }}"
+                                                            alt="{{ $store->name }}" class="card-img-top">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title">{{ $store->name }}</h5>
+                                                        </div>
+                                                    </div>
+                                                </a>
                                             </div>
-                                        </a>
+                                        @empty
+                                            <p class="text-center">No stores found in this subcategory.</p>
+                                        @endforelse
                                     </div>
-                                @empty
-                                    <p class="text-center">No stores found in this category.</p>
-                                @endforelse
+                                @endforeach
                             </div>
                         </div>
                     @endforeach
@@ -65,7 +70,6 @@
                     tab.click();
                 }
             } else {
-                // Ensure the first tab is activated by default if no activeCategory is set
                 const firstTab = document.querySelector('.category-nav-link');
                 if (firstTab) {
                     firstTab.click();

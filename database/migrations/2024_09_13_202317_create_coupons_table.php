@@ -18,6 +18,10 @@ class CreateCouponsTable extends Migration
             $table->date('created_date');
             $table->string('affiliated_link')->nullable();
             $table->boolean('status')->default(true);
+            $table->integer('sort_order')->default(0);
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('deleted_by')->nullable();
             $table->text('description');
             $table->boolean('deal_exclusive')->default(false);
             $table->boolean('verify')->default(false);

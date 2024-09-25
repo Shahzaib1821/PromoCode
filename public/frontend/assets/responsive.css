@@ -50,7 +50,7 @@
     }
 }
 
-@media only screen and (max-width: 1680px) {
+@media (max-width: 1680px) {
     .widget-recent-post ul li .media img {
         width: 140px;
         height: auto;

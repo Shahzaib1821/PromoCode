@@ -18,9 +18,13 @@ class Coupon extends Model
         'created_date',
         'affiliated_link',
         'status',
+        'sort_order',
         'description',
         'deal_exclusive',
-        'verify'
+        'verify',
+        'created_by',
+        'updated_by',
+        'deleted_by',
     ];
 
     protected $casts = [
@@ -34,5 +38,15 @@ class Coupon extends Model
     public function store()
     {
         return $this->belongsTo(Store::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

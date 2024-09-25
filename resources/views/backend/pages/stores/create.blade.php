@@ -64,13 +64,15 @@
 
                             <div class="col-lg-6">
                                 <div class="form-group mb-4">
-                                    <label for="category-select">Category :</label>
-                                    <select name="category_id" id="category-select" class="form-select" required>
-                                        @foreach ($categories as $category)
-                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    <label for="subcategory-select">Subcategory :</label>
+                                    <select name="subcategory_id" id="subcategory-select" class="form-select" required>
+                                        @foreach ($subcategories as $subcategory)
+                                            <option value="{{ $subcategory->id }}">
+                                                {{ $subcategory->category->name }} > {{ $subcategory->name }}
+                                            </option>
                                         @endforeach
                                     </select>
-                                    @error('category_id')
+                                    @error('subcategory_id')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
@@ -263,10 +265,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Summernote editors
-            $('#meta-description').summernote({
-                height: 200,
-            });
             $('#description-textarea').summernote({
                 height: 200,
             });
