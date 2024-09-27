@@ -22,6 +22,7 @@ class CreateStoresTable extends Migration
             $table->string('tagline')->nullable();
             $table->string('image')->nullable();
             $table->unsignedBigInteger('category_id')->nullable();
+            $table->unsignedBigInteger('subcategory_id')->nullable();
             $table->text('description');
             $table->json('faqs')->nullable();
             $table->boolean('top_stores')->default(false);
@@ -38,8 +39,8 @@ class CreateStoresTable extends Migration
             $table->text('meta_description');
             $table->text('meta_keywords');
             $table->timestamps();
-            
-            $table->foreign('subcategory_id')->references('id')->on('subcategories')->onDelete('cascade');
+
+            $table->foreign('subcategory_id')->references('id')->on('sub_categories')->onDelete('cascade');
         });
     }
 

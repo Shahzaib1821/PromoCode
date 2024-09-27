@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
 
         mousewheel: {
-            invert: false
+            // invert: false
         },
         pagination: {
             el: ".swiper-pagination",
@@ -119,5 +119,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
     $(".js-fav").on("click", function () {
         $(this).find(".heart").toggleClass("is-active");
+    });
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    var deleteButtons = document.querySelectorAll('.btn-soft-danger[type="submit"]');
+
+    deleteButtons.forEach(function(button) {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            var form = this.closest('form');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
     });
 });

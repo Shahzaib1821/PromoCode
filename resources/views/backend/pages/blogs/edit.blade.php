@@ -163,26 +163,25 @@
 
                             <div class="col-lg-12">
                                 <div class="form-group mb-4">
-                                    <label for="faqs">FAQs :</label>
+                                    <label>FAQs :</label>
                                     <div id="faqs-container">
-                                        @if (isset($blog) && $blog->faqs)
-                                            @foreach ($blog->faqs as $index => $faq)
-                                                <div class="faq-item">
-                                                    <input type="text" class="form-control mb-2"
-                                                        name="faqs[{{ $index }}][question]"
-                                                        value="{{ $faq['question'] }}" placeholder="Question">
-                                                    <textarea class="form-control mb-2" name="faqs[{{ $index }}][answer]" placeholder="Answer">{{ $faq['answer'] }}</textarea>
-                                                </div>
-                                            @endforeach
-                                        @else
-                                            <div class="faq-item">
-                                                <input type="text" class="form-control mb-2" name="faqs[0][question]"
-                                                    placeholder="Question">
-                                                <textarea class="form-control mb-2" name="faqs[0][answer]" placeholder="Answer"></textarea>
+                                        @php
+                                            $faqs = is_string($blog->faqs)
+                                                ? json_decode($blog->faqs, true)
+                                                : $blog->faqs;
+                                            $faqs = is_array($faqs) ? $faqs : [];
+                                        @endphp
+                                        @foreach ($faqs as $index => $faq)
+                                            <div class="faq-item mb-3">
+                                                <input type="text" class="form-control mb-2"
+                                                    name="faqs[{{ $index }}][question]" placeholder="Question"
+                                                    required value="{{ $faq['question'] ?? '' }}">
+                                                <textarea class="form-control" name="faqs[{{ $index }}][answer]" placeholder="Answer" rows="3"
+                                                    required>{{ $faq['answer'] ?? '' }}</textarea>
                                             </div>
-                                        @endif
+                                        @endforeach
                                     </div>
-                                    <button type="button" class="btn btn-secondary" id="add-faq">Add FAQ</button>
+                                    <button type="button" class="btn btn-secondary mt-2" id="add-faq">Add FAQ</button>
                                 </div>
                             </div>
 

@@ -2,13 +2,13 @@
 
 @section('content')
     <div class="container my-4">
-        <h2 class="mb-5">Browse Stores by Subcategory</h2>
+        <h2 class="mb-5">Browse Stores by Category</h2>
         <div class="row">
             <div class="col-md-3 mb-4">
                 <div class="category-sidebar position-sticky" style="top: 30px;">
                     <ul class="nav flex-column ps-3 align-items-start gap-2 sidebar" id="storeTabs" role="tablist">
                         <h4 class="mb-4">Categories</h4>
-                        @foreach ($categories as $category)
+                        @forelse ($categories as $category)
                             <li class="category-nav-item" role="presentation">
                                 <button
                                     class="category-nav-link nav-link {{ $category->slug === $activeCategory ? 'active' : '' }}"
@@ -19,20 +19,21 @@
                                     {{ $category->name }}
                                 </button>
                             </li>
-                        @endforeach
+                            @empty
+                            <p class="text-center">No categories found.</p>
+                        @endforelse
                     </ul>
                 </div>
             </div>
             <div class="col-md-9 sidebar">
                 <div class="tab-content" id="storeTabsContent">
-                    @foreach ($categories as $category)
+                    @forelse ($categories as $category)
                         <div class="tab-pane fade {{ $category->slug === $activeCategory ? 'show active' : '' }}"
                             id="{{ $category->slug }}" role="tabpanel" aria-labelledby="{{ $category->slug }}-tab">
                             <h3 class="mb-4">{{ $category->name }} Stores</h3>
                             <div class="row">
                                 @foreach ($category->subcategories as $subcategory)
                                     <div class="row">
-                                        <h6 class="mb-4 text-capitalize">{{ $subcategory->name }} Stores</h6>
                                         @forelse ($stores->where('subcategory_id', $subcategory->id) as $store)
                                             <div class="col-lg-3 col-md-4 col-sm-6">
                                                 <a href="{{ route('stores-details', ['slug' => $store->slug]) }}">
@@ -46,13 +47,15 @@
                                                 </a>
                                             </div>
                                         @empty
-                                            <p class="text-center">No stores found in this subcategory.</p>
+                                            <p class="text-center">No stores found in this category.</p>
                                         @endforelse
                                     </div>
                                 @endforeach
                             </div>
                         </div>
-                    @endforeach
+                        @empty
+                        <p class="text-center">No category found.</p>
+                    @endforelse
                 </div>
             </div>
         </div>

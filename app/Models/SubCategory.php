@@ -23,8 +23,4 @@ class SubCategory extends Model
         return $this->hasMany(Store::class);
     }
 
-    public function blogs()
-    {
-        return $this->hasMany(Blog::class);
-    }
 }

@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use App\Models\Blog;
+use App\Models\BlogCategory;
 use App\Models\Category;
 use App\Models\Coupon;
+use App\Models\Deal;
 use App\Models\Slider;
 use App\Models\Store;
 use Carbon\Carbon;
@@ -28,16 +30,17 @@ class PagesController extends Controller
         $saleBanner = Banner::where('is_active', true)->where('type', 'sale')->first();
         $eventBanner = Banner::where('is_active', true)->where('type', 'event')->first();
         $sliders = Slider::all();
-        return view('frontend.pages.home', compact('categories', 'stores', 'mainBlog', 'blogPosts', 'saleBanner', 'eventBanner', 'sliders'));
+        $deals = Deal::where('status', 1)->where('top_deal', true)->take(8)->get();
+        return view('frontend.pages.home', compact('categories', 'stores', 'mainBlog', 'blogPosts', 'saleBanner', 'eventBanner', 'sliders', 'deals'));
     }
 
     public function blogs(Request $request)
     {
         $query = Blog::where('status', 1)->latest();
-        $categories = Category::where('status', 1)->get();
+        $categories = BlogCategory::where('status', 1)->get();
 
         if ($request->has('category')) {
-            $category = Category::where('slug', $request->category)->where('status', 1)->firstOrFail();
+            $category = BlogCategory::where('slug', $request->category)->where('status', 1)->firstOrFail();
             $query->where('category_id', $category->id);
         }
 
@@ -63,10 +66,10 @@ class PagesController extends Controller
 
     public function blogDetail($slug)
     {
-        $categories = Category::all();
+        $categories = BlogCategory::all();
         $recentBlogs = Blog::latest()->take(5)->get();
         $blog = Blog::where('slug', $slug)->firstOrFail();
-
+        $popularBlogs = Blog::where('popular_blog', true)->latest()->take(5)->get();;
         // Get unique archive dates
         $archives = Blog::selectRaw('YEAR(created_at) year, MONTH(created_at) month')
             ->groupBy('year', 'month')
@@ -100,6 +103,7 @@ class PagesController extends Controller
             [
                 'blog' => $blog,
                 'recentBlogs' => $recentBlogs,
+                'popularBlogs' => $popularBlogs,
                 'categories' => $categories,
                 'archives' => $archives,
                 'metaTitle' => $metaTitle,
@@ -144,14 +148,20 @@ class PagesController extends Controller
     {
         $categories = Category::with('subcategories')->get(); // Fetch categories with subcategories
         $stores = Store::with('subcategory')->get(); // Fetch stores with their subcategory
-        $activeCategory = $request->query('active') ?: $categories->first()->slug;
+        $activeCategory = null;
+        $subcategories = [];
 
-        // Fetch the active category object to get subcategories
-        $activeCategoryObject = $categories->firstWhere('slug', $activeCategory);
-        $subcategories = $activeCategoryObject ? $activeCategoryObject->subcategories : [];
+        if ($categories->isNotEmpty()) {
+            $activeCategory = $request->query('active') ?: $categories->first()->slug;
+
+            // Fetch the active category object to get subcategories
+            $activeCategoryObject = $categories->firstWhere('slug', $activeCategory);
+            $subcategories = $activeCategoryObject ? $activeCategoryObject->subcategories : [];
+        }
 
         return view('frontend.pages.categories', compact('categories', 'stores', 'activeCategory', 'subcategories'));
     }
+
 
 
     public function store()
@@ -182,6 +192,12 @@ class PagesController extends Controller
             ->orderBy('sort_order', 'asc')
             ->get();
 
+        // Sort deals by sort_order
+        $deals = $store->deals()
+            ->where('status', 1)
+            ->orderBy('sort_order', 'asc')
+            ->get();
+
         $metaTitle = htmlspecialchars($store->meta_title, ENT_QUOTES, 'UTF-8');
         $metaDescription = htmlspecialchars($store->meta_description, ENT_QUOTES, 'UTF-8');
 
@@ -205,6 +221,7 @@ class PagesController extends Controller
             'popularStores' => $popularStores,
             'categories' => $categories,
             'coupons' => $coupons,
+            'deals' => $deals,
             'metaTitle' => $metaTitle,
             'metaDescription' => $metaDescription,
             'metaKeywords' => $metaKeywords,
@@ -215,6 +232,28 @@ class PagesController extends Controller
     public function coupons()
     {
         return view('frontend.pages.coupons');
+    }
+
+    public function deals()
+    {
+        $categories = Category::where('status', 1)->take(5)->get();
+
+        $dealsByCategory = [];
+        foreach ($categories as $category) {
+            $dealsByCategory[$category->id] = Deal::where('status', 1)
+                ->whereHas('store', function ($query) use ($category) {
+                    $query->where('id', $category->id);
+                })
+                ->take(8)  // Limit to 8 deals per category
+                ->get();
+        }
+
+        $topDeals = Deal::where('status', 1)
+            ->where('top_deal', true)
+            ->take(8)
+            ->get();
+
+        return view('frontend.pages.deals', compact('dealsByCategory', 'categories', 'topDeals'));
     }
 
 

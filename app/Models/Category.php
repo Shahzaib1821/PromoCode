@@ -16,11 +16,6 @@ class Category extends Model
         return $this->hasMany(Store::class);
     }
 
-    public function blogs()
-    {
-        return $this->hasMany(Blog::class);
-    }
-
     public function subcategories()
     {
         return $this->hasMany(Subcategory::class);

@@ -58,7 +58,7 @@
                                 @enderror
                                 @if($slider->image_path)
                                     <div class="mt-2">
-                                        <img src="{{ asset($slider->image_path) }}" alt="Slider Image" width="100">
+                                        <img src="{{ asset('uploads/sliders/bg/' . $slider->image_path) }}" alt="Slider Image" width="100">
                                     </div>
                                 @endif
                             </div>
@@ -75,7 +75,7 @@
                                 @enderror
                                 @if($slider->logo_path)
                                     <div class="mt-2">
-                                        <img src="{{ asset($slider->logo_path) }}" alt="Slider Logo" width="100">
+                                        <img src="{{ asset('uploads/sliders/logo/' . $slider->logo_path) }}" alt="Slider Logo" width="100">
                                     </div>
                                 @endif
                             </div>

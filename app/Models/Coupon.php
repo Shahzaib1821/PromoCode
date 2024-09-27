@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Coupon extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'name',
@@ -26,6 +28,30 @@ class Coupon extends Model
         'updated_by',
         'deleted_by',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+
+    public function tapActivity($activity, string $eventName)
+    {
+        $activity->properties = $activity->properties->merge(['type' => 'coupon']);
+
+        if ($eventName === 'created') {
+            $activity->description = "Coupon '{$this->code}' was created";
+        } elseif ($eventName === 'updated') {
+            $changes = $activity->changes();
+            $updatedFields = isset($changes['attributes']) ? array_keys($changes['attributes']) : [];
+            $updatedFields[] = 'type';  // Add 'type' to the list of updated fields
+            $activity->description = "Updated " . implode(', ', array_unique($updatedFields)) . " for coupon '{$this->code}'";
+        } elseif ($eventName === 'deleted') {
+            $activity->description = "Coupon '{$this->code}' was deleted";
+        }
+    }
 
     protected $casts = [
         'expiry_date' => 'date',

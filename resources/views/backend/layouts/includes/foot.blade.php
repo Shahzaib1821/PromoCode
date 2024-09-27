@@ -27,6 +27,7 @@
 <script src="{{ asset('backend/assets/js/pages/datatables.init.js') }}"></script>
 
 <script src="{{ asset('backend/assets/js/app.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.12.2/dist/summernote-lite.min.js"></script>

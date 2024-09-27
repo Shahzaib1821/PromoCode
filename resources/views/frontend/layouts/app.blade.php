@@ -3,69 +3,73 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>{{ $metaTitle ?? 'Default Title' }} | Promo Code</title>
+    <title>{{ $settings['site_title'] ?? 'Default Title' }} | Promo Code</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{ $metaDescription ?? 'Default description' }}">
     <meta name="keywords" content="{{ $metaKeywords ?? 'Default keywords' }}">
     <meta content="Themesbrand" name="author" />
-    <style>
-        :root {
-            --primary-color: {{ $settings['primary_color'] ?? '' }};
-            --secondary-color: {{ $settings['secondary_color'] ?? '' }};
-            --button-color: {{ $settings['button_color'] ?? '' }};
-            --hover-color: {{ $settings['hover_color'] ?? '' }};
-            --link-color: {{ $settings['link_color'] ?? '' }};
-            --header-color: {{ $settings['header_color'] ?? '' }};
-            --footer-color: {{ $settings['footer_color'] ?? '' }};
-            /* Add footer color */
-            --heading-size: {{ $settings['heading_size'] ?? '2rem' }};
-            /* Add heading size */
-        }
-
-        body {
-            background-color: var(--primary-color);
-            color: var(--secondary-color);
-        }
-
-        .btn {
-            background-color: var(--button-color);
-        }
-
-        .btn:hover {
-            background-color: var(--hover-color);
-        }
-
-        a {
-            color: var(--link-color);
-        }
-
-        header {
-            background-color: var(--header-color);
-        }
-
-        footer {
-            background-color: var(--footer-color);
-        }
-
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-            font-size: var(--heading-size);
-        }
-    </style>
 
     @include('frontend.layouts.includes.head')
+
+    <style>
+        :root {
+            --primary-color: {{ $settings['primary_color'] ?? '#5f1899' }};
+            --secondary-color: {{ $settings['secondary_color'] ?? '#7720db' }};
+            --primary-button-color: {{ $settings['primary_button_color'] ?? '#009599' }};
+            --secondary-button-color: {{ $settings['secondary_button_color'] ?? '#f0f0f0' }};
+        }
+
+
+
+        h1 { font-size: {{ $settings['h1_font_size'] ?? '32' }}px; !important; }
+        h2 { font-size: {{ $settings['h2_font_size'] ?? '28' }}px; !important; }
+        h3 { font-size: {{ $settings['h3_font_size'] ?? '24' }}px; !important; }
+        h4 { font-size: {{ $settings['h4_font_size'] ?? '20' }}px; !important; }
+        h5 { font-size: {{ $settings['h5_font_size'] ?? '18' }}px; !important; } 
+        h6 { font-size: {{ $settings['h6_font_size'] ?? '16' }}px; !important; }
+        p { font-size: {{ $settings['p_font_size'] ?? '16' }}px; }
+        span { font-size: {{ $settings['span_font_size'] ?? '14' }}px; }
+
+        .section-link {
+            color: var(--primary-button-color);
+            border-color: var(--primary-button-color);
+        }
+
+        .prev, .next {
+            background-color: var(--secondary-button-color);
+            border-color: var(--secondary-button-color);
+        }
+    </style>
 
     @yield('head')
 </head>
 
-<body data-sidebar="dark">
+<body>
+    {{-- <header>
+        <img src="{{ $settings['header_logo'] ?? asset('default-header-logo.png') }}" alt="Header Logo">
+    </header> --}}
+
     @include('frontend.layouts.includes.header')
 
     @yield('content')
+
+    {{-- <footer>
+        <img src="{{ $settings['footer_logo'] ?? asset('default-footer-logo.png') }}" alt="Footer Logo">
+        <div class="social-links">
+            @if(isset($settings['facebook_link']))
+                <a href="{{ $settings['facebook_link'] }}" target="_blank">Facebook</a>
+            @endif
+            @if(isset($settings['twitter_link']))
+                <a href="{{ $settings['twitter_link'] }}" target="_blank">Twitter</a>
+            @endif
+            @if(isset($settings['instagram_link']))
+                <a href="{{ $settings['instagram_link'] }}" target="_blank">Instagram</a>
+            @endif
+            @if(isset($settings['linkedin_link']))
+                <a href="{{ $settings['linkedin_link'] }}" target="_blank">LinkedIn</a>
+            @endif
+        </div>
+    </footer> --}}
 
     @include('frontend.layouts.includes.footer')
 

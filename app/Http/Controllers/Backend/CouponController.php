@@ -40,20 +40,14 @@ class CouponController extends Controller
             'verify' => 'boolean',
         ]);
 
-        $validatedData['deal_exclusive'] = $request->has('deal_exclusive');
-        $validatedData['verify'] = $request->has('verify');
+        // Set created_by field
         $validatedData['created_by'] = Auth::id();
-        $validatedData['updated_by'] = null;
 
-        DB::transaction(function () use ($validatedData) {
-            $lastSortOrder = Coupon::where('store_id', $validatedData['store_id'])->max('sort_order') ?? 0;
-            $validatedData['sort_order'] = $lastSortOrder + 1;
-            Coupon::create($validatedData);
-        });
+        // Create the coupon using validated data
+        $coupon = Coupon::create($validatedData);
 
         return redirect()->route('coupons.index')->with('success', 'Coupon created successfully.');
     }
-
     public function show(Coupon $coupon)
     {
         return view('backend.pages.coupons.show', compact('coupon'));
@@ -82,9 +76,11 @@ class CouponController extends Controller
             'sort_order' => 'required|integer|min:1',
         ]);
 
+        $oldValues = $coupon->getAttributes();
+
         $validatedData['deal_exclusive'] = $request->has('deal_exclusive') ? 1 : 0;
         $validatedData['verify'] = $request->has('verify') ? 1 : 0;
-        $validatedData['updated_by'] = Auth::id();
+        $validatedData['updated_by'] = Auth::id(); // Ensure updated_by is set
 
         $oldSortOrder = $coupon->sort_order;
         $newSortOrder = $validatedData['sort_order'];
@@ -133,6 +129,7 @@ class CouponController extends Controller
     public function destroy(Coupon $coupon)
     {
         $coupon->delete();
+
         return redirect()->route('coupons.index')->with('success', 'Coupon deleted successfully.');
     }
 }

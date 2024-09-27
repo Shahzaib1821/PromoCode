@@ -46,7 +46,7 @@
                                                 style="display: inline;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-soft-danger waves-effect waves-light">
+                                                <button type="submit" class="btn btn-soft-danger waves-effect waves-light" onclick="return confirm('Are your sure')">
                                                     <i class="bx bx-trash-alt"></i> Delete
                                                 </button>
                                             </form>

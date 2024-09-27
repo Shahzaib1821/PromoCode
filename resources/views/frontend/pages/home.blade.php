@@ -23,15 +23,16 @@
                     </div>
                     <div class="col-lg-12">
                         <div class="row">
-                            @foreach (range(1, 8) as $index)
+                            @foreach ($deals as $deal)
                                 <div class="col-lg-3 col-md-4 col-sm-6">
                                     <div class="card p-0 card-horizontal">
-                                        <img src="{{ asset('frontend/assets/img/deals/' . $index . (pathinfo('frontend/assets/img/deals/' . $index . '.webp', PATHINFO_EXTENSION) == 'png' ? '.png' : '.webp')) }}"
-                                            alt="Store {{ $index }}" class="card-img-top">
+                                        <img src="{{ asset('uploads/stores/' . $deal->store->image) }}"
+                                            alt="{{ $deal->store->name }}" class="card-img-top">
                                         <div class="card-body">
-                                            <h5 class="card-title">Moroccanoil</h5>
-                                            <p class="card-text">20% Off Shampoo</p>
-                                            <a href="#" class="coupon-link">coupon code</a>
+                                            <h5 class="card-title">{{ $deal->store->name }}</h5>
+                                            <p class="card-text">Get Discount of {{ $deal->discounted_price }}</p>
+                                            <a href="{{ route('stores-details', ['slug' => $deal->store->slug]) }}"
+                                                class="coupon-link">Get Deal</a>
                                         </div>
                                     </div>
                                 </div>

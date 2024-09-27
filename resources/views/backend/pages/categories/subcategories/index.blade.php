@@ -10,7 +10,7 @@
                     @endif
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="card-title">Categories</h4>
+                            <h4 class="card-title">Store Sub Categories</h4>
                             <a href="{{ route('subcategories.create') }}"
                                 class="btn btn-success btn-rounded waves-effect waves-light mb-2 me-2">
                                 <i class="bx bx-plus"></i> Add New Sub-Category
@@ -41,7 +41,7 @@
                                                 method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-soft-danger waves-effect waves-light">
+                                                <button type="submit" class="btn btn-soft-danger waves-effect waves-light" onclick="return confirm('Are your sure')">
                                                     <i class="bx bx-trash-alt"></i> Delete
                                                 </button>
                                             </form>

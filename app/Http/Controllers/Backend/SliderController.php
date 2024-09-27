@@ -73,12 +73,36 @@ class SliderController extends Controller
         $slider->store_name = $validatedData['store_name'];
         $slider->link = $validatedData['link'];
         if ($request->hasFile('image_path')) {
-            Storage::delete('public/' . $slider->image_path);
-            $slider->image_path = $request->file('image_path')->store('sliders', 'public');
+            // Delete the old image if it exists
+            if ($slider->image_path) {
+                $oldImagePath = public_path('uploads/sliders/bg/' . $slider->image_path);
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            }
+
+            // Handle the new image upload
+            $image = $request->file('image_path');
+            $imagePath = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/sliders/bg'), $imagePath);
+            $slider->image_path = $imagePath;
         }
+
+        // Check if the logo_path file was uploaded
         if ($request->hasFile('logo_path')) {
-            Storage::delete('public/' . $slider->logo_path);
-            $slider->logo_path = $request->file('logo_path')->store('sliders', 'public');
+            // Delete the old logo if it exists
+            if ($slider->logo_path) {
+                $oldLogoPath = public_path('uploads/sliders/logo/' . $slider->logo_path);
+                if (file_exists($oldLogoPath)) {
+                    unlink($oldLogoPath);
+                }
+            }
+
+            // Handle the new logo upload
+            $logo = $request->file('logo_path');
+            $logoPath = time() . '.' . $logo->getClientOriginalExtension();
+            $logo->move(public_path('uploads/sliders/logo'), $logoPath);
+            $slider->logo_path = $logoPath;
         }
         $slider->save();
 

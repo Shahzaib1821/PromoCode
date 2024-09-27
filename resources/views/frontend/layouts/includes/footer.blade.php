@@ -2,7 +2,9 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-6 footer-col">
-                <h4 class="text-left">Promo Code</h4>
+                <h4 class="text-left"><img
+                        src="{{ asset('uploads/' . $settings['footer_logo']) ?? asset('default-footer-logo.png') }}"
+                        style="max-width: {{ $settings['logo_max_width'] ?? 200 }}px;" alt="Footer Logo"></h4>
                 <p class="text-white">Promo Code tracks coupon codes from online
                     merchants to help consumers save money. We may earn
                     a commission when you use one of our coupons/links to
@@ -10,10 +12,22 @@
                     promo code of interest on the merchant website to
                     ensure validity before making a purchase.</p>
                 <div class="social-links">
-                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                    @if (isset($settings['facebook_link']))
+                        <a href="{{ $settings['facebook_link'] }}" target="_blank"><i
+                                class="fa-brands fa-facebook-f"></i></a>
+                    @endif
+                    @if (isset($settings['twitter_link']))
+                        <a href="{{ $settings['twitter_link'] }}" target="_blank"><i
+                                class="fa-brands fa-x-twitter"></i></a>
+                    @endif
+                    @if (isset($settings['instagram_link']))
+                        <a href="{{ $settings['instagram_link'] }}" target="_blank"><i
+                                class="fa-brands fa-instagram"></i></a>
+                    @endif
+                    @if (isset($settings['linkedin_link']))
+                        <a href="{{ $settings['linkedin_link'] }}" target="_blank"><i
+                                class="fa-brands fa-linkedin-in"></i></a>
+                    @endif
                 </div>
             </div>
             <div class="col-lg-2 footer-col">

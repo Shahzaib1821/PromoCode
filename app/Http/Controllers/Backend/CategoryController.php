@@ -13,12 +13,12 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::all();
-        return view('backend.pages.categories.index', compact('categories'));
+        return view('backend.pages.categories.store-categories.index', compact('categories'));
     }
 
     public function create()
     {
-        return view('backend.pages.categories.create');
+        return view('backend.pages.categories.store-categories.create');
     }
 
     public function store(Request $request)
@@ -46,12 +46,12 @@ class CategoryController extends Controller
 
     public function show(Category $category)
     {
-        return view('backend.pages.categories.show', compact('category'));
+        return view('backend.pages.categories.store-categories.show', compact('category'));
     }
 
     public function edit(Category $category)
     {
-        return view('backend.pages.categories.edit', compact('category'));
+        return view('backend.pages.categories.store-categories.edit', compact('category'));
     }
 
     public function update(Request $request, Category $category)

@@ -44,9 +44,9 @@ class Blog extends Model
         });
     }
 
-    public function category()
+    public function blogcategories()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(BlogCategory::class);
     }
-    
+
 }

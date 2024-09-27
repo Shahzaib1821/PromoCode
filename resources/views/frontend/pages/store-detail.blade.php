@@ -4,12 +4,12 @@
     <section class="store-header">
         <div class="container">
             <div class="row">
-                <div class="col-md-3 col-3">
+                <div class="col-md-4 col-4">
                     <a target="_blank" href="{{ $store->website }}" class="bcss store-img"
                         style="background-image: url('{{ asset('uploads/stores/' . $store->image) }}');"> </a>
                 </div>
-                <div class="col-md-9 col-9">
-                    <h2 class="mb-4">{{ $store->name }}</h2>
+                <div class="col-md-8 col-8">
+                    <h2 class="mb-4 header-heading">{{ $store->name }}</h2>
                     <p class="lead">{{ $store->tagline }}</p>
                 </div>
             </div>
@@ -39,7 +39,7 @@
 
             <main class="col-sm-12 col-md-12 col-lg-8">
                 <!-- Tabs Section -->
-                <ul class="nav nav-tabs border-0 shadow-none border-bottom pb-0 justify-content-start bg-transparent"
+                <ul class="nav nav-tabs border-0 shadow-none border-bottom p-0 justify-content-start justify-content-sm-around bg-transparent"
                     id="storeTabs" role="tablist">
 
                     <li class="nav-item" role="presentation">
@@ -69,100 +69,132 @@
                 <div class="tab-content mt-4" id="storeTabsContent">
 
                     <!-- Coupons Section -->
-                    <div class="tab-pane show active" id="coupons" role="tabpanel" aria-labelledby="coupons-tab">
+                    <div class="tab-pane fade show active" id="coupons" role="tabpanel" aria-labelledby="coupons-tab">
                         <h3 class="mb-4">Available Coupons</h3>
-                        @forelse ($coupons as $coupon)
-                            <div class="list-body showAll showCoupon">
-                                <span id="coupon-{{ $coupon->id }}-expiry"
-                                    style="display: none;">{{ $coupon->expiry_date->format('d-F-Y') }}</span>
-                                <div class="list-content row align-items-center">
-                                    <div class="col-md-9">
-                                        <div class="row">
-                                            <div class="col-lg-4 col-md-4 col-sm-12 p-0">
-                                                <div class="list-left left-code term">
-                                                    <a rel="nofollow" class="txtLink"
-                                                        href="javascript:sanitizeURL({{ $coupon->id }});">
-                                                        <div class="one32">{{ e($coupon->discounted_price) }}</div>
-                                                        <div class="one32">Off</div>
-                                                    </a>
+                        <div class="row">
+                            @forelse ($coupons as $coupon)
+                                <div class="col-lg-12 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="list-body showAll showCoupon">
+                                        <span id="coupon-{{ $coupon->id }}-expiry"
+                                            style="display: none;">{{ $coupon->expiry_date->format('d-F-Y') }}</span>
+                                        <div class="list-content row align-items-center mx-auto">
+                                            <div class="col-lg-9 col-md-7">
+                                                <div class="row">
+                                                    <div class="col-lg-4 col-md-4 col-sm-12 p-0">
+                                                        <div class="list-left left-code term">
+                                                            <a rel="nofollow" class="txtLink"
+                                                                href="javascript:sanitizeURL({{ $coupon->id }});">
+                                                                <div class="one32">{{ e($coupon->discounted_price) }}
+                                                                </div>
+                                                                <div class="one32">Off</div>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-8 col-md-8 col-sm-12">
+                                                        <div class="list-center">
+                                                            <div class="top-content">
+                                                                @if ($coupon->verify == 1)
+                                                                    <div class="verified">
+                                                                        <span class="Verify">Verify</span>
+                                                                    </div>
+                                                                @endif
+                                                                @if ($coupon->deal_exclusive == 1)
+                                                                    <div class="verified">
+                                                                        <span class="Verify">Exclusive</span>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                            <a rel="nofollow" class="txtLink"
+                                                                href="javascript:sanitizeURL({{ $coupon->id }});">
+                                                                <h3 class="center-title">{{ $coupon->name }}</h3>
+                                                            </a>
+                                                            <div class="center-dsc">
+                                                                <p class="list-dsc-content">Coupon expires at:
+                                                                    {{ $coupon->expiry_date->format('d-F-Y') }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-8 col-md-8 col-sm-12">
-                                                <div class="list-center">
-                                                    <div class="top-content">
-                                                        @if ($coupon->verify == 1)
-                                                            <div class="verified">
-                                                                <span class="Verify">
-                                                                    Verify </span>
-                                                                </span>
-                                                            </div>
-                                                        @endif
-                                                        @if ($coupon->deal_exclusive == 1)
-                                                            <div class="verified">
-                                                                <span class="Verify">
-                                                                    Exclusive </span>
-                                                                </span>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                    <a rel="nofollow" class="txtLink"
-                                                        href="javascript:sanitizeURL({{ $coupon->id }});">
-                                                        <h3 class="center-title">{{ $coupon->name }}</h3>
-
-                                                    </a>
-                                                    <div class="center-dsc">
-                                                        <p class="list-dsc-content"> Coupon expires at
-                                                            : {{ $coupon->expiry_date->format('d-F-Y') }}</p>
-                                                    </div>
+                                            <div class="col-lg-3 col-md-5">
+                                                <div class="list-right py-3 justify-content-center">
+                                                    <button class="button has-code w-100"
+                                                        onclick="openCodeModal('{{ $coupon->id }}', '{{ $coupon->coupon_code }}', '{{ $coupon->affiliated_link }}')">
+                                                        Get Code
+                                                        <span class="peel-code"><em
+                                                                class="peel-text">{{ $coupon->coupon_code }}</em></span>
+                                                    </button>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="list-right">
-
-                                            <button class="button has-code"
-                                                onclick="openCodeModal('{{ $coupon->id }}', '{{ $coupon->coupon_code }}', '{{ $coupon->affiliated_link }}')">
-                                                {{-- onclick="openCodeModal('{{ $coupon->id }}', '{{ $coupon->coupon_code }}')"> --}}
-                                                Get Code
-                                                <span class="peel-code"><em class="peel-text">abc12b</em></span>
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        @empty
-                            <p>No coupons right now</p>
-                        @endforelse
+                            @empty
+                                <p>No coupons right now</p>
+                            @endforelse
+                        </div>
                     </div>
 
                     <!-- Deals Section -->
                     <div class="tab-pane fade" id="deals" role="tabpanel" aria-labelledby="deals-tab">
                         <h3 class="mb-4">Available Deals</h3>
-                        {{-- @foreach ($deals as $deal)
-                            <div class="list-body showAll showCoupon">
-                                <div class="list-content">
-                                    <div class="list-left left-code term">
-                                        <a rel="nofollow" class="txtLink" href="javascript:sanitizeURL({{ $deal->id }});">
-                                            <div class="one32">{{ $deal->discount }}</div>
-                                            <div class="one32">Off</div>
-                                        </a>
-                                    </div>
-                                    <div class="list-center">
-                                        <a rel="nofollow" class="txtLink" href="javascript:sanitizeURL({{ $deal->id }});">
-                                            <h3 class="center-title">{{ $deal->title }}</h3>
-                                        </a>
-                                        <div class="center-dsc">
-                                            <p class="list-dsc-content">{{ $deal->description }}</p>
+                        @forelse ($deals as $deal)
+                            <div class="col-lg-12 col-md-6 col-sm-6 col-xs-12">
+                                <div class="list-body showAll showCoupon">
+                                    <span id="deal-{{ $deal->id }}-expiry"
+                                        style="display: none;">{{ $deal->expiry_date->format('d-F-Y') }}</span>
+                                    <div class="list-content row align-items-center mx-auto">
+                                        <div class="col-lg-9 col-md-7">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-4 col-sm-12 p-0">
+                                                    <div class="list-left left-code term">
+                                                        <a rel="nofollow" class="txtLink"
+                                                            href="javascript:sanitizeURL({{ $deal->id }});">
+                                                            <div class="one32">{{ e($deal->discounted_price) }}</div>
+                                                            <div class="one32">Off</div>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8 col-md-8 col-sm-12">
+                                                    <div class="list-center">
+                                                        <div class="top-content">
+                                                            @if ($deal->verify == 1)
+                                                                <div class="verified">
+                                                                    <span class="Verify">Verify</span>
+                                                                </div>
+                                                            @endif
+                                                            @if ($deal->deal_exclusive == 1)
+                                                                <div class="verified">
+                                                                    <span class="Verify">Exclusive</span>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                        <a rel="nofollow" class="txtLink"
+                                                            href="javascript:sanitizeURL({{ $deal->id }});">
+                                                            <h3 class="center-title">{{ $deal->name }}</h3>
+                                                        </a>
+                                                        <div class="center-dsc">
+                                                            <p class="list-dsc-content">Deal expires at:
+                                                                {{ $deal->expiry_date->format('d-F-Y') }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="list-right">
-                                        <button class="button has-code">Get Deal</button>
+                                        <div class="col-lg-3 col-md-5">
+                                            <div class="list-right py-3 justify-content-center">
+                                                <button class="button has-code w-100"
+                                                    onclick="openCodeModal('{{ $deal->id }}', '{{ $deal->affiliated_link }}')">
+                                                    Get Deal
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            @endforeach --}}
-                        <p>no deal avaible right now</p>
+                            @empty
+                                <p>No deals available right now</p>
+                        @endforelse
                     </div>
 
                     <!-- Store Details Section -->
@@ -194,7 +226,7 @@
                                 </tr>
                                 <tr>
                                     <td class="py-2">Total Offers</td>
-                                    <td class="py-2">{{ $coupons->count() }}</td>
+                                    <td class="py-2">{{ $coupons->count() + $deals->count() }}</td>
                                 </tr>
                                 <tr>
                                     <td class="py-2">Coupon Codes</td>
