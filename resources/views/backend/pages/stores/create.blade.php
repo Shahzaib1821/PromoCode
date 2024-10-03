@@ -25,7 +25,7 @@
 
                             <div class="col-lg-6">
                                 <div class="form-group mb-4">
-                                    <label for="link-input">Slug :</label>
+                                    <label for="link-input">Url :</label>
                                     <input type="text" class="form-control @error('slug') is-invalid @enderror"
                                         id="link-input" name="slug" placeholder="Enter Store Slug (unique)" required>
                                     @error('slug')
@@ -51,7 +51,7 @@
 
                             <div class="col-lg-6">
                                 <div class="form-group mb-4">
-                                    <label for="tagline-input">Store Tagline :</label>
+                                    <label for="tagline-input">About Store :</label>
                                     <input type="text" class="form-control @error('tagline') is-invalid @enderror"
                                         id="tagline-input" name="tagline" placeholder="Enter Store Tagline" required>
                                     @error('tagline')
@@ -64,15 +64,20 @@
 
                             <div class="col-lg-6">
                                 <div class="form-group mb-4">
-                                    <label for="subcategory-select">Subcategory :</label>
-                                    <select name="subcategory_id" id="subcategory-select" class="form-select" required>
-                                        @foreach ($subcategories as $subcategory)
-                                            <option value="{{ $subcategory->id }}">
-                                                {{ $subcategory->category->name }} > {{ $subcategory->name }}
+                                    <label for="category-select">Category :</label>
+                                    <select name="category_id" id="category-select" class="form-select" required>
+                                        <option value="">Select a category</option>
+                                        @foreach ($combined as $item)
+                                            <option value="{{ $item->id }}">
+                                                @if ($item->is_subcategory)
+                                                    {{ $item->parent_name }} > {{ $item->name }}
+                                                @else
+                                                    {{ $item->name }}
+                                                @endif
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error('subcategory_id')
+                                    @error('category_id')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
@@ -267,6 +272,10 @@
         document.addEventListener('DOMContentLoaded', function() {
             $('#description-textarea').summernote({
                 height: 200,
+
+                // font size
+                  fontSize: ['8px', '10px', '12px', '14px', '16px', '18px', '20px', '22px', '24px', '26px', '28px', '30px']
+
             });
 
             // // Initialize Select2

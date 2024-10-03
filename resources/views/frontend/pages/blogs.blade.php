@@ -28,7 +28,7 @@
                                             <li><i class="far fa-calendar-alt"></i>
                                                 {{ $post->created_at->format('F d, Y') }}</li>
                                         </ul>
-                                        <h5><a href="{{ route('blog-details', ['slug' => $post->slug]) }}">{{ $post->name }}</a></h5>
+                                        <h5><a href="{{ route('blog-details', ['slug' => $post->slug]) }}">{{ Str::limit(strip_tags($post->name), 45) }}</a></h5>
                                         <p>{{ Str::limit(strip_tags($post->short_description), 280) }}</p>
                                         <a href="{{ route('blog-details', ['slug' => $post->slug]) }}">Read More <span><i
                                                     class="la la-long-arrow-right"></i></span></a>

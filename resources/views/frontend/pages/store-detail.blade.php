@@ -10,7 +10,16 @@
                 </div>
                 <div class="col-md-8 col-8">
                     <h2 class="mb-4 header-heading">{{ $store->name }}</h2>
-                    <p class="lead">{{ $store->tagline }}</p>
+                    @php
+                        // Count verified coupons
+                        $verifiedCount = $coupons
+                            ->filter(function ($coupon) {
+                                return $coupon->verify == 1;
+                            })
+                            ->count();
+                    @endphp
+
+                    <p class="lead">{{ $verifiedCount }} VERIFIED OFFERS ON {{ now()->format('F jS, Y') }}</p>
                 </div>
             </div>
         </div>
@@ -21,10 +30,45 @@
             <div class="col-sm-12 col-md-12 col-lg-3 sidebar">
                 <h2 class="mb-4">{{ $store->name }}</h2>
 
+                <h6>About {{ $store->name }}</h6>
+                <p style="font-size: 13px;line-height: unset; text-align: justify; hyphens: auto;">
+                    {{ $store->tagline }}
+                </p>
+
+                <table class="w-full table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td class="py-2">You can save upto</td>
+                            <td class="py-2">{{ $store->savings ?? '$50.00' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2">Total Offers</td>
+                            <td class="py-2">{{ $coupons->count() + $deals->count() }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2">Coupon Codes</td>
+                            <td class="py-2">{{ $coupons->count() }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2">Free Shipping</td>
+                            <td class="py-2">{{ $store->free_shipping ?? 'Yes' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2">Best Discount</td>
+                            <td class="py-2">{{ $store->discount ?? '70% Off' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2">Last Updated</td>
+                            <td class="py-2">{{ now()->format('d M, Y') }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
                 <h4>Popular Stores</h4>
                 <ul class="list-unstyled">
                     @foreach ($popularStores as $populatStore)
-                        <li><a href="{{ route('stores-details', $populatStore->slug) }}">{{ $populatStore->name }}</a></li>
+                        <li><a href="{{ route('stores-details', $populatStore->slug) }}">{{ $populatStore->name }}</a>
+                        </li>
                     @endforeach
                 </ul>
 
@@ -39,37 +83,28 @@
 
             <main class="col-sm-12 col-md-12 col-lg-8">
                 <!-- Tabs Section -->
-                <ul class="nav nav-tabs border-0 shadow-none border-bottom p-0 justify-content-start justify-content-sm-around bg-transparent"
+                <ul class="nav nav-tabs border-0 shadow-none border-bottom p-0 justify-content-start bg-transparent"
                     id="storeTabs" role="tablist">
 
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="coupons-tab" data-bs-toggle="tab" data-bs-target="#coupons"
+                        <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all"
+                            type="button" role="tab" aria-controls="all" aria-selected="false">All</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="coupons-tab" data-bs-toggle="tab" data-bs-target="#coupons"
                             type="button" role="tab" aria-controls="coupons" aria-selected="true">Coupons</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="deals-tab" data-bs-toggle="tab" data-bs-target="#deals" type="button"
                             role="tab" aria-controls="deals" aria-selected="false">Deals</button>
                     </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="store-details-tab" data-bs-toggle="tab" data-bs-target="#store-details"
-                            type="button" role="tab" aria-controls="store-details" aria-selected="false">Store
-                            Details</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="features-tab" data-bs-toggle="tab" data-bs-target="#features"
-                            type="button" role="tab" aria-controls="features" aria-selected="false">Features</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="faq-tab" data-bs-toggle="tab" data-bs-target="#faq" type="button"
-                            role="tab" aria-controls="faq" aria-selected="false">FAQ</button>
-                    </li>
                 </ul>
 
                 <!-- Tab Panes -->
                 <div class="tab-content mt-4" id="storeTabsContent">
 
-                    <!-- Coupons Section -->
-                    <div class="tab-pane fade show active" id="coupons" role="tabpanel" aria-labelledby="coupons-tab">
+                    <!-- Store Details Section -->
+                    <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
                         <h3 class="mb-4">Available Coupons</h3>
                         <div class="row">
                             @forelse ($coupons as $coupon)
@@ -86,7 +121,166 @@
                                                                 href="javascript:sanitizeURL({{ $coupon->id }});">
                                                                 <div class="one32">{{ e($coupon->discounted_price) }}
                                                                 </div>
-                                                                <div class="one32">Off</div>
+                                                                {{-- <div class="one32">Off</div> --}}
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-8 col-md-8 col-sm-12">
+                                                        <div class="list-center">
+                                                            <div class="top-content">
+                                                                @if ($coupon->verify == 1)
+                                                                    <div class="verified">
+                                                                        <span class="Verify">Verify</span>
+                                                                    </div>
+                                                                @endif
+                                                                @if ($coupon->deal_exclusive == 1)
+                                                                    <div class="verified">
+                                                                        <span class="Verify">Exclusive</span>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                            <a rel="nofollow" class="txtLink"
+                                                                href="javascript:sanitizeURL({{ $coupon->id }});">
+                                                                <h3 class="center-title">{{ $coupon->name }}</h3>
+                                                            </a>
+                                                            <div class="center-dsc">
+                                                                <p class="list-dsc-content">Coupon expires at:
+                                                                    {{ $coupon->expiry_date->format('d-F-Y') }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-md-5">
+                                                <div class="list-right py-3 justify-content-center">
+                                                    <button class="button has-code w-100"
+                                                        onclick="openCodeModal('{{ $coupon->id }}', '{{ $coupon->coupon_code }}', '{{ $coupon->affiliated_link }}')">
+                                                        Get Code
+                                                        <span class="peel-code"><em
+                                                                class="peel-text">{{ $coupon->coupon_code }}</em></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @empty
+                                <p>No coupons right now</p>
+                            @endforelse
+                        </div>
+
+                        <h3 class="mb-4">Available Deals</h3>
+                        @forelse ($deals as $deal)
+                            <div class="col-lg-12 col-md-6 col-sm-6 col-xs-12">
+                                <div class="list-body showAll showCoupon">
+                                    <span id="deal-{{ $deal->id }}-expiry"
+                                        style="display: none;">{{ $deal->expiry_date->format('d-F-Y') }}</span>
+                                    <div class="list-content row align-items-center mx-auto">
+                                        <div class="col-lg-9 col-md-7">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-4 col-sm-12 p-0">
+                                                    <div class="list-left left-code term">
+                                                        <a rel="nofollow" class="txtLink"
+                                                            href="javascript:sanitizeURL({{ $deal->id }});">
+                                                            <div class="one32">{{ e($deal->discounted_price) }}</div>
+                                                            {{-- <div class="one32">Off</div> --}}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8 col-md-8 col-sm-12">
+                                                    <div class="list-center">
+                                                        <div class="top-content">
+                                                            @if ($deal->verify == 1)
+                                                                <div class="verified">
+                                                                    <span class="Verify">Verify</span>
+                                                                </div>
+                                                            @endif
+                                                            @if ($deal->deal_exclusive == 1)
+                                                                <div class="verified">
+                                                                    <span class="Verify">Exclusive</span>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                        <a rel="nofollow" class="txtLink"
+                                                            href="javascript:sanitizeURL({{ $deal->id }});">
+                                                            <h3 class="center-title">{{ $deal->name }}</h3>
+                                                        </a>
+                                                        <div class="center-dsc">
+                                                            <p class="list-dsc-content">Deal expires at:
+                                                                {{ $deal->expiry_date->format('d-F-Y') }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-5">
+                                            <div class="list-right py-3 justify-content-center">
+                                                <button class="button has-code w-100"
+                                                    onclick="openDealModal('{{ $deal->id }}', '{{ $deal->affiliated_link }}')">
+                                                    Get Deal
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <p>No deal right now.</p>
+                        @endforelse
+                        <h3 class="mb-4">Store Details</h3>
+
+                        <!-- Store Video -->
+                        @if ($store->video)
+                            <div class="video-container mb-4">
+                                {!! $store->video !!}
+                            </div>
+                        @endif
+
+                        <div class="storeList cb">
+                            <h3>{{ $store->name }} COUPON AND PROMO CODES:</h3>
+                            <p>{!! $store->description !!}</p>
+                        </div>
+
+
+
+                        <h3 class="mb-4">Frequently Asked Questions</h3>
+                        <div class="accordion">
+                            @if (count($faqs) > 0)
+                                @foreach ($faqs as $faq)
+                                    <div class="accordion-item">
+                                        <button id="accordion-button" aria-expanded="false">
+                                            <span class="accordion-title">{{ $faq['question'] }}</span>
+                                        </button>
+                                        <div class="accordion-content">
+                                            <p>{{ $faq['answer'] }}</p>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <p class="text-sm text-gray-500">No FAQs available at the moment.</p>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Coupons Section -->
+                    <div class="tab-pane fade" id="coupons" role="tabpanel" aria-labelledby="coupons-tab">
+                        <h3 class="mb-4">Available Coupons</h3>
+                        <div class="row">
+                            @forelse ($coupons as $coupon)
+                                <div class="col-lg-12 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="list-body showAll showCoupon">
+                                        <span id="coupon-{{ $coupon->id }}-expiry"
+                                            style="display: none;">{{ $coupon->expiry_date->format('d-F-Y') }}</span>
+                                        <div class="list-content row align-items-center mx-auto">
+                                            <div class="col-lg-9 col-md-7">
+                                                <div class="row">
+                                                    <div class="col-lg-4 col-md-4 col-sm-12 p-0">
+                                                        <div class="list-left left-code term">
+                                                            <a rel="nofollow" class="txtLink"
+                                                                href="javascript:sanitizeURL({{ $coupon->id }});">
+                                                                <div class="one32">{{ e($coupon->discounted_price) }}
+                                                                </div>
+                                                                {{-- <div class="one32">Off</div> --}}
                                                             </a>
                                                         </div>
                                                     </div>
@@ -151,7 +345,7 @@
                                                         <a rel="nofollow" class="txtLink"
                                                             href="javascript:sanitizeURL({{ $deal->id }});">
                                                             <div class="one32">{{ e($deal->discounted_price) }}</div>
-                                                            <div class="one32">Off</div>
+                                                            {{-- <div class="one32">Off</div> --}}
                                                         </a>
                                                     </div>
                                                 </div>
@@ -184,7 +378,7 @@
                                         <div class="col-lg-3 col-md-5">
                                             <div class="list-right py-3 justify-content-center">
                                                 <button class="button has-code w-100"
-                                                    onclick="openCodeModal('{{ $deal->id }}', '{{ $deal->affiliated_link }}')">
+                                                    onclick="openDealModal('{{ $deal->id }}', '{{ $deal->affiliated_link }}')">
                                                     Get Deal
                                                 </button>
                                             </div>
@@ -192,105 +386,17 @@
                                     </div>
                                 </div>
                             </div>
-                            @empty
-                                <p>No deals available right now</p>
+                        @empty
+                            <p>No deals available right now</p>
                         @endforelse
-                    </div>
-
-                    <!-- Store Details Section -->
-                    <div class="tab-pane fade" id="store-details" role="tabpanel" aria-labelledby="store-details-tab">
-                        <h3 class="mb-4">Store Details</h3>
-
-                        <!-- Store Video -->
-                        @if ($store->video)
-                            <div class="video-container mb-4">
-                                {!! $store->video !!}
-                            </div>
-                        @endif
-
-                        <div class="storeList cb">
-                            <h3>{{ $store->name }} COUPON AND PROMO CODES:</h3>
-                            <p>{!! $store->description !!}</p>
-                        </div>
-
-                    </div>
-
-                    <!-- Features Section -->
-
-                    <div class="tab-pane fade" id="features" role="tabpanel" aria-labelled="features-tab">
-                        <table class="w-full table table-bordered">
-                            <tbody>
-                                <tr>
-                                    <td class="py-2">You can save upto</td>
-                                    <td class="py-2">{{ $store->savings ?? '$50.00' }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2">Total Offers</td>
-                                    <td class="py-2">{{ $coupons->count() + $deals->count() }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2">Coupon Codes</td>
-                                    <td class="py-2">{{ $coupons->count() }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2">Free Shipping</td>
-                                    <td class="py-2">{{ $store->free_shipping ?? 'Yes' }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2">Best Discount</td>
-                                    <td class="py-2">{{ $store->discount ?? '70% Off' }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2">Last Updated</td>
-                                    <td class="py-2">{{ now()->format('d M, Y') }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- FAQ Section -->
-                    <div class="tab-pane fade" id="faq" role="tabpanel" aria-labelledby="faq-tab">
-                        <h3 class="mb-4">Frequently Asked Questions</h3>
-                        <div class="accordion">
-                            @if (count($faqs) > 0)
-                                @foreach ($faqs as $faq)
-                                    <div class="accordion-item">
-                                        <button id="accordion-button" aria-expanded="false">
-                                            <span class="accordion-title">{{ $faq['question'] }}</span>
-                                        </button>
-                                        <div class="accordion-content">
-                                            <p>{{ $faq['answer'] }}</p>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            @else
-                                <p class="text-sm text-gray-500">No FAQs available at the moment.</p>
-                            @endif
-                        </div>
                     </div>
 
                 </div>
             </main>
         </div>
     </div>
-    {{-- <div class="modal fade" id="codeModal" tabindex="-1" role="dialog" aria-labelledby="codeModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="codeModalLabel">Coupon Code</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>Your coupon code is: <strong id="couponCode"></strong></p>
-                </div>
-            </div>
-        </div>
-    </div> --}}
 
-    <div class="modal fade" id="codeModal" tabindex="-1" role="dialog" aria-labelledby="dealModal"
+    <div class="modal fade" id="codeModal" tabindex="-1" role="dialog" aria-labelledby="codeModal"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -333,25 +439,53 @@
             </div>
         </div>
     </div>
-    {{-- <div class="modal fade " id="codeModal" tabindex="-1" role="dialog" aria-labelledby="dealModal"
+
+    {{-- <div class="modal fade" id="dealModal" tabindex="-1" role="dialog" aria-labelledby="dealModal"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header" style="border:none">
-                    <h4 class="modal-title" id="myModalLabel">Coupon Code</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <h4 class="modal-title" id="myModalLabel">Deal Information</h4>
+                    <button type="button" class="close fs-2" onclick="$('#dealModal').modal('hide');">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body text-center">
-                    <a href="{{ $store->website }}"> <img alt="Signup For Exclusive Deals &amp; Discounts"
-                            src="{{ asset('uploads/stores/' . $store->image) }}"
-                            style="border: 1px solid #000;border-radius: 64px;margin-bottom: 1rem;"></a>
-                    <p style="font-weight: 600;">Signup For Exclusive Deals &amp; Discounts</p>
+                    <a id="modalStoreLink" href="#">
+                        <img id="modalStoreImage" alt="Exclusive Deal" src=""
+                            style="border: 1px solid #000;border-radius: 64px;margin-bottom: 1rem;">
+                    </a>
+                    <p style="font-weight: 600;">Exclusive Deals & Discounts</p>
+                    <p style="margin-top:1rem">Visit the store at <a id="modalStoreName" href="#"
+                            style="border-bottom:1px solid #000;"></a></p>
+                </div>
+                <div class="modal-footer text-center" style="background-color: #b0b0b026;">
+                    <p class="p-2 rounded w-100" id="modalExpiryDate"></p>
+                </div>
+            </div>
+        </div>
+    </div> --}}
+    <div class="modal fade" id="dealModal" tabindex="-1" role="dialog" aria-labelledby="dealModal"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="border:none">
+                    <h4 class="modal-title" id="myModalLabel">Deal Information</h4>
+                    <button type="button" class="close fs-2" onclick="$('#dealModal').modal('hide');">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <a id="modalDealStoreLink" href="#">
+                        <img id="modalDealStoreImage" alt="Exclusive Deal" src=""
+                            style="border: 1px solid #000;border-radius: 64px;margin-bottom: 1rem;">
+                    </a>
+                    <p style="font-weight: 600;">Exclusive Deals & Discounts</p>
                     <div
                         class="align-items-center border border-1 border-end-0 border-start-0 d-block d-flex gap-2 justify-content-center me-auto ms-auto p-2 position-relative">
-                        <h5 class="mb-0">Click to copy</h5>
-                        <button class="Btn">
+                        {{-- <h5 class="mb-0" id="modalDealText"></h5> --}}
+                        <button class="w-50 rounded-5 getdeal"
+                            onclick="window.open(document.getElementById('modalDealStoreLink').href, '_blank')">
                             <div class="svgWrapper">
                                 <svg xml:space="preserve" viewBox="0 0 6.35 6.35" y="0" x="0" height="20"
                                     width="20" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
@@ -362,20 +496,20 @@
                                         </path>
                                     </g>
                                 </svg>
-                                <div class="text">{{ $coupon->coupon_code }}</div>
+                                <div class="text">Get Deal</div>
                             </div>
                         </button>
-
                     </div>
-                    <p style="margin-top:1rem">Copy and paste this code at <a href="{{ $store->website }}"
-                            style="border-bottom:1px solid #000;">{{ $store->name }}</a></p>
+                    <p style="margin-top:1rem">Click the button above to get this deal at <a id="modalDealStoreName"
+                            href="#" style="border-bottom:1px solid #000;"></a></p>
                 </div>
                 <div class="modal-footer text-center" style="background-color: #b0b0b026;">
-                    <p class="p-2 rounded w-100 ">Deal will be expire on : {{ $coupon->expiry_date->format('Y-m-d') }}</p>
+                    <p class="p-2 rounded w-100" id="modalDealExpiryDate"></p>
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
+
 @endsection
 
 @section('scripts')
@@ -464,6 +598,51 @@
                     });
                 }
             });
+        });
+
+        function openDealModal(dealId, affiliatedLink) {
+            var currentUrl = window.location.href.split('?')[0];
+            var modalUrl = currentUrl + '?openDealModal=true&dealId=' + dealId;
+
+            sessionStorage.setItem('tempDealId', dealId);
+
+            // Open new tab with modal URL
+            window.open(modalUrl, '_blank');
+
+            // Redirect to the affiliated link in the current tab
+            window.location.href = affiliatedLink;
+        }
+
+        // Check if we need to open the deal modal on page load
+        $(document).ready(function() {
+            var openDealModal = getUrlParameter('openDealModal');
+            if (openDealModal === 'true') {
+                var dealId = getUrlParameter('dealId');
+                if (!dealId) {
+                    dealId = sessionStorage.getItem('tempDealId');
+                    sessionStorage.removeItem('tempDealId');
+                }
+
+                // Get store details from the page
+                var $storeElement = $('.store-header');
+                var storeName = $storeElement.find('h2').text().trim();
+                var storeWebsite = $storeElement.find('a.store-img').attr('href');
+                var storeImage = $storeElement.find('a.store-img').css('background-image').replace(/url\(['"]?/, '')
+                    .replace(/['"]?\)/, '');
+
+                // Get deal details
+                var $dealElement = $('[id^="deal-' + dealId + '"]').closest('.list-body');
+                var dealText = $dealElement.find('.center-title').text().trim();
+                var expiryDate = $('#deal-' + dealId + '-expiry').text();
+
+                $('#modalDealText').text(dealText);
+                $('#modalDealExpiryDate').text('Deal will expire on: ' + expiryDate);
+                $('#modalDealStoreImage').attr('src', storeImage);
+                $('#modalDealStoreLink').attr('href', storeWebsite);
+                $('#modalDealStoreName').text(storeName).attr('href', storeWebsite);
+
+                $('#dealModal').modal('show');
+            }
         });
     </script>
 @endsection

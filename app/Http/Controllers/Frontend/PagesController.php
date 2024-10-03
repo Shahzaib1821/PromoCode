@@ -23,7 +23,7 @@ class PagesController extends Controller
     }
     public function home()
     {
-        $categories = Category::where('status', 1)->take(7)->get();
+        $categories = Category::where('status', 1)->where('parent_id', null)->take(7)->get();
         $stores = Store::where('status', 1)->get();
         $mainBlog = Blog::where('id', 1)->where('status', 1)->get();
         $blogPosts = Blog::where('top_blog', true)->where('status', 1)->get();
@@ -184,7 +184,7 @@ class PagesController extends Controller
     {
         $store = Store::where('slug', $slug)->where('status', 1)->firstOrFail();
         $popularStores = Store::where('popular_stores', true)->where('status', 1)->get();
-        $categories = Category::where('status', 1)->take(7)->get();
+        $categories = Category::where('status', 1)->where('parent_id', null)->take(7)->get();
 
         // Sort coupons by sort_order
         $coupons = $store->coupons()
@@ -233,29 +233,6 @@ class PagesController extends Controller
     {
         return view('frontend.pages.coupons');
     }
-
-    public function deals()
-    {
-        $categories = Category::where('status', 1)->take(5)->get();
-
-        $dealsByCategory = [];
-        foreach ($categories as $category) {
-            $dealsByCategory[$category->id] = Deal::where('status', 1)
-                ->whereHas('store', function ($query) use ($category) {
-                    $query->where('id', $category->id);
-                })
-                ->take(8)  // Limit to 8 deals per category
-                ->get();
-        }
-
-        $topDeals = Deal::where('status', 1)
-            ->where('top_deal', true)
-            ->take(8)
-            ->get();
-
-        return view('frontend.pages.deals', compact('dealsByCategory', 'categories', 'topDeals'));
-    }
-
 
 
     // Footer Pages

@@ -22,6 +22,32 @@
     @include('backend.layouts.includes.foot')
 
     @yield('scripts')
+    <script>
+        $(document).ready(function() {
+            var table = $('#datatable').DataTable();
+
+            // Check for stored filter value
+            var storedFilter = localStorage.getItem('storeFilter');
+            if (storedFilter) {
+                $('#storeFilter').val(storedFilter);
+                table.search(storedFilter).draw();
+            }
+
+            // Event listener for filter input
+            $('#storeFilter').on('keyup', function() {
+                var filterValue = this.value;
+                localStorage.setItem('storeFilter', filterValue);
+                table.search(filterValue).draw();
+            });
+
+            // Clear filter button
+            $('#clearFilter').on('click', function() {
+                $('#storeFilter').val('');
+                localStorage.removeItem('storeFilter');
+                table.search('').draw();
+            });
+        });
+    </script>
 </body>
 
 </html>

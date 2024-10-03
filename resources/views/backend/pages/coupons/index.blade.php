@@ -11,6 +11,12 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <h4 class="card-title">Manage Coupons</h4>
+                            <div class="d-flex">
+                                <input type="text" id="storeFilter" class="form-control form-control-sm"
+                                    placeholder="Filter by name">
+                                <button id="clearFilter" class="btn btn-soft-primary waves-effect waves-light w-50"><i
+                                        class="bx bx-undo"></i>Clear</button>
+                            </div>
                             <a href="{{ route('coupons.create') }}"
                                 class="btn btn-success btn-rounded waves-effect waves-light mb-2 me-2">
                                 <i class="bx bx-plus"></i> Add New Coupon
@@ -24,7 +30,7 @@
                                     <th>Name</th>
                                     <th>Code</th>
                                     <th>Store</th>
-                                    <th>Expiry Date</th>
+                                    <th>Sort Order</th>
                                     <th>Status</th>
                                     <th>Created by</th>
                                     <th>Updated by</th>
@@ -37,7 +43,7 @@
                                         <td>{{ $coupon->name }}</td>
                                         <td>{{ $coupon->coupon_code }}</td>
                                         <td>{{ $coupon->store->name }}</td>
-                                        <td>{{ $coupon->expiry_date->format('d-F-Y') }}</td>
+                                        <td>{{ $coupon->sort_order }}</td>
                                         <td>{{ $coupon->status ? 'Active' : 'Inactive' }}</td>
                                         <td>{{ $coupon->creator ? $coupon->creator->name : '' }}</td>
                                         <td>{{ $coupon->updater ? $coupon->updater->name : '' }}</td>

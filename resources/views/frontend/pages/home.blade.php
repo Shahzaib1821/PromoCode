@@ -18,23 +18,25 @@
                     <div class="col-lg-12">
                         <div class="d-flex align-items-center mb-3 justify-content-between">
                             <h4 class="section-title">Top Deals</h4>
-                            <a href="{{ url('deals') }}" class="section-link">View all</a>
+                            {{-- <a href="{{ url('deals') }}" class="section-link">View all</a> --}}
                         </div>
                     </div>
                     <div class="col-lg-12">
                         <div class="row">
                             @foreach ($deals as $deal)
                                 <div class="col-lg-3 col-md-4 col-sm-6">
-                                    <div class="card p-0 card-horizontal">
-                                        <img src="{{ asset('uploads/stores/' . $deal->store->image) }}"
-                                            alt="{{ $deal->store->name }}" class="card-img-top">
-                                        <div class="card-body">
-                                            <h5 class="card-title">{{ $deal->store->name }}</h5>
-                                            <p class="card-text">Get Discount of {{ $deal->discounted_price }}</p>
-                                            <a href="{{ route('stores-details', ['slug' => $deal->store->slug]) }}"
-                                                class="coupon-link">Get Deal</a>
+                                    <a href="{{ route('stores-details', ['slug' => $deal->store->slug]) }}" class="text-black">
+                                        <div class="card p-0 card-horizontal">
+                                            <img src="{{ asset('uploads/stores/' . $deal->store->image) }}"
+                                                alt="{{ $deal->store->name }}" class="card-img-top">
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ $deal->store->name }}</h5>
+                                                <p class="card-text">Get Discount of {{ $deal->discounted_price }}</p>
+                                                <a href="{{ route('stores-details', ['slug' => $deal->store->slug]) }}"
+                                                    class="coupon-link">Get Deal</a>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 </div>
                             @endforeach
                         </div>
@@ -56,8 +58,8 @@
                             @foreach ($categories as $category)
                                 <a href="{{ route('categories', ['active' => $category->slug]) }}" class="category">
                                     <div class="category-image">
-                                        <img src="{{ asset('storage/' . $category->image) }}" class="img-fluid rounded"
-                                            alt="{{ $category->name }}">
+                                        <img src="{{ asset('uploads/categories/' . $category->image) }}"
+                                            class="img-fluid rounded" alt="{{ $category->name }}">
                                     </div>
                                     <div class="category-name">
                                         {{ $category->name }}
@@ -77,9 +79,9 @@
         <section class="section sale-banner px-0">
             <div class="sale-banner-img text-center">
                 <a href="{{ $saleBanner->link }}">
-                    <img src="{{ asset('storage/' . $saleBanner->desktop_image) }}" class="w-100 desktop"
+                    <img src="{{ asset('uploads/banners/' . $saleBanner->desktop_image) }}" class="w-100 desktop"
                         alt="{{ $saleBanner->title }}">
-                    <img src="{{ asset('storage/' . $saleBanner->mobile_image) }}" class="w-100 mobile"
+                    <img src="{{ asset('uploads/banners/' . $saleBanner->mobile_image) }}" class="w-100 mobile"
                         alt="{{ $saleBanner->title }}">
                 </a>
             </div>
@@ -121,10 +123,10 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <a href="{{ $eventBanner->link }}">
-                                <img src="{{ asset('storage/' . $eventBanner->desktop_image) }}" class="w-100 desktop"
-                                    alt="{{ $eventBanner->title }}">
-                                <img src="{{ asset('storage/' . $eventBanner->mobile_image) }}" class="w-100 mobile"
-                                    alt="{{ $eventBanner->title }}">
+                                <img src="{{ asset('uploads/banners/' . $eventBanner->desktop_image) }}"
+                                    class="w-100 desktop" alt="{{ $eventBanner->title }}">
+                                <img src="{{ asset('uploads/banners/' . $eventBanner->mobile_image) }}"
+                                    class="w-100 mobile" alt="{{ $eventBanner->title }}">
                             </a>
                         </div>
                     </div>

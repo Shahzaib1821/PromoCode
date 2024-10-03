@@ -6,6 +6,16 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title mb-4">Edit Store</h4>
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
 
                     <form action="{{ route('store.update', $store->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
@@ -18,23 +28,23 @@
                                         id="label-input" name="name" placeholder="Enter Store Name" required
                                         value="{{ old('name', $store->name) }}">
                                     @error('name')
-                                        <span class="invalid-feedback" role="alert">
+                                        <div class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
-                                        </span>
+                                        </div>
                                     @enderror
                                 </div>
                             </div>
 
                             <div class="col-lg-6">
                                 <div class="form-group mb-4">
-                                    <label for="link-input">Slug :</label>
+                                    <label for="link-input">Url :</label>
                                     <input type="text" class="form-control @error('slug') is-invalid @enderror"
                                         id="link-input" name="slug" placeholder="Enter Store Slug (unique)" required
                                         value="{{ old('slug', $store->slug) }}">
                                     @error('slug')
-                                        <span class="invalid-feedback" role="alert">
+                                        <div class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
-                                        </span>
+                                        </div>
                                     @enderror
                                 </div>
                             </div>
@@ -45,9 +55,9 @@
                                     <input type="file" class="form-control @error('image') is-invalid @enderror"
                                         id="image-input" name="image">
                                     @error('image')
-                                        <span class="invalid-feedback" role="alert">
+                                        <div class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
-                                        </span>
+                                        </div>
                                     @enderror
                                     @if ($store->image)
                                         <img src="{{ asset('uploads/stores/' . $store->image) }}" alt="Current Image"
@@ -58,37 +68,40 @@
 
                             <div class="col-lg-6">
                                 <div class="form-group mb-4">
-                                    <label for="tagline-input">Store Tagline :</label>
+                                    <label for="tagline-input">About Store :</label>
                                     <input type="text" class="form-control @error('tagline') is-invalid @enderror"
                                         id="tagline-input" name="tagline" placeholder="Enter Store Tagline" required
-                                        value="{{ old('tagline', $store->tagline) }}">
+                                        value="{{ old('heatagline', $store->tagline) }}">
                                     @error('tagline')
-                                        <span class="invalid-feedback" role="alert">
+                                        <div class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
-                                        </span>
+                                        </div>
                                     @enderror
                                 </div>
                             </div>
 
                             <div class="col-lg-6">
                                 <div class="form-group mb-4">
-                                    <label for="subcategory-select">Subcategory :</label>
-                                    <select name="subcategory_id" id="subcategory-select" class="form-select" required>
-                                        @foreach ($subcategories as $subcategory)
-                                            <option value="{{ $subcategory->id }}"
-                                                {{ old('subcategory_id', $store->subcategory_id) == $subcategory->id ? 'selected' : '' }}>
-                                                {{ $subcategory->category->name }} > {{ $subcategory->name }}
+                                    <label for="subcategory-select">Category :</label>
+                                    <select name="category_id" id="subcategory-select" class="form-select" required>
+                                        @foreach ($combined as $item)
+                                            <option value="{{ $item->id }}"
+                                                {{ old('category_id', $store->category_id) == $item->id ? 'selected' : '' }}>
+                                                @if ($item->is_subcategory)
+                                                    {{ $item->parent_name }} > {{ $item->name }}
+                                                @else
+                                                    {{ $item->name }}
+                                                @endif
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error('subcategory_id')
-                                        <span class="invalid-feedback" role="alert">
+                                    @error('category_id')
+                                        <div class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
-                                        </span>
+                                        </div>
                                     @enderror
                                 </div>
                             </div>
-
 
                             <!-- Website Input Field for Edit Page -->
                             <div class="col-lg-6">
@@ -98,9 +111,9 @@
                                         id="website" name="website" value="{{ old('website', $store->website) }}"
                                         placeholder="Enter Store Website URL" required>
                                     @error('website')
-                                        <span class="invalid-feedback" role="alert">
+                                        <div class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
-                                        </span>
+                                        </div>
                                     @enderror
                                 </div>
                             </div>
@@ -112,9 +125,9 @@
                                     <textarea class="form-control @error('video') is-invalid @enderror" id="video-iframe" name="video"
                                         placeholder="Paste the iframe embed code for the video here" rows="3">{{ old('video', $store->video) }}</textarea>
                                     @error('video')
-                                        <span class="invalid-feedback" role="alert">
+                                        <div class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
-                                        </span>
+                                        </div>
                                     @enderror
                                 </div>
                             </div>
@@ -125,9 +138,9 @@
                                     <textarea name="description" id="description-textarea" class="form-control @error('description') is-invalid @enderror"
                                         rows="5" required>{{ old('description', $store->description) }}</textarea>
                                     @error('description')
-                                        <span class="invalid-feedback" role="alert">
+                                        <div class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
-                                        </span>
+                                        </div>
                                     @enderror
                                 </div>
                             </div>
@@ -190,9 +203,9 @@
                                             name="meta_title" placeholder="Enter Meta Title" required
                                             value="{{ old('meta_title', $store->meta_title) }}">
                                         @error('meta_title')
-                                            <span class="invalid-feedback" role="alert">
+                                            <div class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
-                                            </span>
+                                            </div>
                                         @enderror
                                     </div>
                                 </div>
@@ -200,21 +213,14 @@
                                 <div class="col-lg-6">
                                     <div class="form-group mb-4">
                                         <label for="meta-keywords">Meta Keywords</label>
-                                        @php
-                                            // Decode the JSON if it's a string, otherwise, keep it as an array
-                                            $meta_keywords = is_string($store->meta_keywords)
-                                                ? json_decode($store->meta_keywords, true)
-                                                : $store->meta_keywords;
-                                            $meta_keywords = is_array($meta_keywords) ? $meta_keywords : [];
-                                        @endphp
                                         <input type="text"
                                             class="form-control @error('meta_keywords') is-invalid @enderror"
                                             id="meta-keywords" name="meta_keywords" placeholder="Enter Meta Keywords"
-                                            required value="{{ old('meta_keywords', implode(',', $meta_keywords)) }}">
+                                            required value="{{ old('meta_keywords', $store->meta_keywords) }}">
                                         @error('meta_keywords')
-                                            <span class="invalid-feedback" role="alert">
+                                            <div class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
-                                            </span>
+                                            </div>
                                         @enderror
                                     </div>
                                 </div>
@@ -222,74 +228,23 @@
                                 <div class="col-lg-12">
                                     <div class="form-group mb-4">
                                         <label for="meta-description">Meta Description</label>
-                                        <textarea class="form-control @error('meta_description') is-invalid @enderror" id="meta-description"
-                                            name="meta_description" rows="3" required>{{ old('meta_description', $store->meta_description) }}</textarea>
+                                        <textarea name="meta_description" id="meta-description"
+                                            class="form-control @error('meta_description') is-invalid @enderror" rows="3" required>{{ old('meta_description', $store->meta_description) }}</textarea>
                                         @error('meta_description')
-                                            <span class="invalid-feedback" role="alert">
+                                            <div class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
-                                            </span>
+                                            </div>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
 
-                            <h4 class="text-dark mb-4">Chart Info</h4>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="form-group mb-4">
-                                        <label for="savings-title">Savings</label>
-                                        <input type="text" class="form-control @error('savings') is-invalid @enderror"
-                                            id="savings-title" name="savings" placeholder="Enter Saving" required
-                                            value="{{ old('savings', $store->savings) }}">
-                                        @error('savings')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="form-group mb-4">
-                                        <label for="discount-title">Discounted Price</label>
-                                        <input type="text"
-                                            class="form-control @error('discount') is-invalid @enderror"
-                                            id="discount-title" name="discount" placeholder="Enter Discount" required
-                                            value="{{ old('discount', $store->discount) }}">
-                                        @error('discount')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="form-group mb-4">
-                                        <label for="free-shipping-title">Free Shipping</label>
-                                        <select name="free_shipping" class="form-select">
-                                            <option value="Yes"
-                                                {{ old('free_shipping', $store->free_shipping) == 'Yes' ? 'selected' : '' }}>
-                                                Yes</option>
-                                            <option value="No"
-                                                {{ old('free_shipping', $store->free_shipping) == 'No' ? 'selected' : '' }}>
-                                                No</option>
-                                        </select>
-                                        @error('free_shipping')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                                </div>
+                            <div class="col-lg-12">
+                                <button type="submit" class="btn btn-primary">Update Store</button>
                             </div>
-
-                            <div class="row justify-content-end">
-                                <div class="col-sm-12">
-                                    <div>
-                                        <button type="submit" class="btn btn-primary w-md">Update Store</button>
-                                    </div>
-                                </div>
-                            </div>
+                        </div>
                     </form>
+
                 </div>
             </div>
         </div>
@@ -302,18 +257,13 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Summernote editors
-
-            $('#meta-description').summernote({
-                height: 200,
-            });
             $('#description-textarea').summernote({
                 height: 200,
                 fontFamily: 'Poppins',
+                disableDragAndDrop: true,
             });
 
-            // Add FAQ functionality with plain JavaScript
-            let faqCount = 0; // Start from 0
+            let faqCount = 0;
             const addFaqButton = document.getElementById('add-faq');
             const faqsContainer = document.getElementById('faqs-container');
 

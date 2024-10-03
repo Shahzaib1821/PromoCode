@@ -66,6 +66,26 @@
                                 </div>
                             </div>
 
+                            <div class="col-lg-6">
+                                <div class="form-group mb-4">
+                                    <label for="parent_id">Parent Category :</label>
+                                    <select class="form-control @error('parent_id') is-invalid @enderror" name="parent_id" id="parent_id">
+                                        <option value="">Select Parent Category (Optional)</option>
+                                        @foreach ($categories as $cat)
+                                            <option value="{{ $cat->id }}"
+                                                {{ old('parent_id', isset($category) ? $category->parent_id : '') == $cat->id ? 'selected' : '' }}>
+                                                {{ $cat->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('parent_id')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
                         </div>
 
                         <div class="row justify-content-end">

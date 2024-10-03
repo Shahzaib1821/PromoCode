@@ -8,6 +8,7 @@ use App\Models\Store;
 use App\Models\SubCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class StoreController extends Controller
@@ -24,11 +25,17 @@ class StoreController extends Controller
         return view('frontend.pages.store-detail', compact('store'));
     }
 
+    // public function create()
+    // {
+    //     $categories = Category::all();
+    //     $subcategories = SubCategory::all();
+    //     return view('backend.pages.stores.create', compact('categories', 'subcategories'));
+    // }
     public function create()
     {
-        $categories = Category::all();
-        $subcategories = SubCategory::all();
-        return view('backend.pages.stores.create', compact('categories', 'subcategories'));
+        $categoryController = new CategoryController();
+        $combined = $categoryController->getCombinedCategories();
+        return view('backend.pages.stores.create', compact('combined'));
     }
 
     public function store(Request $request)
@@ -37,8 +44,8 @@ class StoreController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:stores',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'tagline' => 'required|string|max:255',
-            'subcategory_id' => 'required|exists:categories,id',
+            'tagline' => 'required|string|',
+            'category_id' => 'required|exists:categories,id',
             'description' => 'required|string',
             'top_stores' => 'boolean',
             'top_brands' => 'boolean',
@@ -94,9 +101,9 @@ class StoreController extends Controller
     public function edit($id)
     {
         $store = Store::findOrFail($id);
-        $categories = Category::all();
-        $subcategories = SubCategory::all();
-        return view('backend.pages.stores.edit', compact('store', 'categories', 'subcategories'));
+        $categoryController = new CategoryController();
+        $combined = $categoryController->getCombinedCategories();
+        return view('backend.pages.stores.edit', compact('store', 'combined'));
     }
 
     public function update(Request $request, Store $store)
@@ -105,8 +112,8 @@ class StoreController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:stores,slug,' . $store->id,
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'tagline' => 'required|string|max:255',
-            'subcategory_id' => 'required|exists:categories,id',
+            'tagline' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
             'description' => 'required|string',
             'top_stores' => 'boolean',
             'top_brands' => 'boolean',
@@ -117,7 +124,7 @@ class StoreController extends Controller
             'faqs.*.answer' => 'required|string',
             'meta_title' => 'required|string|max:255',
             'meta_description' => 'required|string',
-            'meta_keywords' => 'required|string',
+            'meta_keywords' => 'required|string', // Keep it as string for validation
             'savings' => 'nullable|string|max:255',
             'discount' => 'nullable|string|max:255',
             'free_shipping' => 'nullable|string|max:255',
@@ -157,21 +164,18 @@ class StoreController extends Controller
                 $validatedData['faqs'] = null;
             }
 
-            // Process meta keywords
-            $validatedData['meta_keywords'] = json_encode(explode(',', $validatedData['meta_keywords']));
+            // Convert meta keywords from string to array and encode to JSON
+            $validatedData['meta_keywords'] = json_encode(array_map('trim', explode(',', $validatedData['meta_keywords'])));
 
             // Update the store
             $store->update($validatedData);
 
             return redirect()->route('store.index')->with('success', 'Store updated successfully.');
-        } catch (\Exception $e) {
-            // If an error occurs and a new image was uploaded, delete it
-            if (isset($imagePath) && Storage::disk('public')->exists($imagePath)) {
-                Storage::disk('public')->delete($imagePath);
-            }
-
+        }  catch (\Exception $e) {
+            Log::error('Error updating store: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'An error occurred while updating the store. Please try again.');
         }
+
     }
 
     public function destroy($id)

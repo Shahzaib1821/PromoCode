@@ -11,6 +11,12 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <h4 class="card-title">Store Categories</h4>
+                            <div class="d-flex">
+                                <input type="text" id="storeFilter" class="form-control form-control-sm"
+                                    placeholder="Filter by name">
+                                <button id="clearFilter" class="btn btn-soft-primary waves-effect waves-light w-50"><i
+                                        class="bx bx-undo"></i>Clear</button>
+                            </div>
                             <a href="{{ route('categories.create') }}"
                                 class="btn btn-success btn-rounded waves-effect waves-light mb-2 me-2">
                                 <i class="bx bx-plus"></i> Add New Category
@@ -36,7 +42,7 @@
                                         <td>{{ $category->status ? 'Active' : 'Inactive' }}</td>
                                         <td>
                                             @if ($category->image)
-                                                <img src="{{ asset('storage/' . $category->image) }}"
+                                                <img src="{{ asset('uploads/categories/' . $category->image) }}"
                                                     alt="{{ $category->name }}" style="width: 100px;" class="bg-black">
                                             @endif
                                         </td>

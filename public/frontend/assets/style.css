@@ -64,7 +64,7 @@ a {
 }
 
 .nav-link {
-    font-size: 14px ;
+    font-size: 14px;
     font-weight: 700 !important;
     padding: 8px 20px;
     color: #a871d6;
@@ -1186,6 +1186,7 @@ main {
     justify-content: center;
     border-right: 1px dashed #eaeaea;
     padding: 24px 16px;
+    height: 100%;
     overflow: hidden;
     line-height: 32px;
     background-color: var(--primary-color);
@@ -1999,8 +2000,48 @@ a.txtLink {
 .storeList.cb h1 span,
 .storeList.cb p span,
 .storeList.cb ol li span,
+.storeList.cb ul li span,
+p span,
+p,
+h1 span,
+h1,
+h2 span,
+h2,
+h3 span,
+h3,
+h4 span,
+h4,
+h5,
+h6 {
+    font-family: "Poppins", sans-serif !important;
+}
+
+.storeList.cb h6 span,
+.storeList.cb p,
+.storeList.cb p span,
+.storeList.cb ol li span,
 .storeList.cb ul li span {
-    font-family: "Poppins", sans-serif;
+    font-size: 16px !important;
+}
+
+.storeList.cb h5 span {
+    font-size: 18px !important;
+}
+
+.storeList.cb h4 span {
+    font-size: 20px !important;
+}
+
+.storeList.cb h3 span {
+    font-size: 24px !important;
+}
+
+.storeList.cb h2 span {
+    font-size: 28px !important;
+}
+
+.storeList.cb h1 span {
+    font-size: 32px !important;
 }
 
 .mobile {
@@ -2069,4 +2110,34 @@ a.txtLink {
     stroke-dashoffset: 0;
     transform-origin: left;
     transform: rotateZ(-45deg) translate(-5px, 5px);
+}
+
+.custom-h1 {
+    font-size: 36px;
+    /* Adjust as necessary */
+}
+
+.custom-h2 {
+    font-size: 30px;
+    /* Adjust as necessary */
+}
+
+.custom-h3 {
+    font-size: 24px;
+    /* Adjust as necessary */
+}
+
+.custom-h4 {
+    font-size: 20px;
+    /* Adjust as necessary */
+}
+
+.custom-h5 {
+    font-size: 18px;
+    /* Adjust as necessary */
+}
+
+.custom-h6 {
+    font-size: 16px;
+    /* Adjust as necessary */
 }

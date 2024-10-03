@@ -15,7 +15,7 @@ class Store extends Model
         'slug',
         'image',
         'tagline',
-        'subcategory_id',
+        'category_id',
         'description',
         'faqs',
         'meta_title',
@@ -74,14 +74,7 @@ class Store extends Model
 
     public function category()
     {
-        return $this->hasOneThrough(
-            Category::class,
-            SubCategory::class,
-            'id',
-            'id',
-            'subcategory_id',
-            'category_id'
-        );
+        return $this->belongsTo(Category::class);
     }
 
     public function coupons()

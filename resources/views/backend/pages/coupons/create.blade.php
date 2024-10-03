@@ -69,10 +69,10 @@
 
                             <div class="col-lg-6">
                                 <div class="form-group mb-4">
-                                    <label for="expiry_date">Expiry Date :</label>
-                                    <input type="date" class="form-control @error('expiry_date') is-invalid @enderror"
-                                        id="expiry_date" name="expiry_date" required>
-                                    @error('expiry_date')
+                                    <label for="created_date">Created Date :</label>
+                                    <input type="date" class="form-control @error('created_date') is-invalid @enderror"
+                                        id="created_date" name="created_date" required>
+                                    @error('created_date')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
@@ -82,10 +82,10 @@
 
                             <div class="col-lg-6">
                                 <div class="form-group mb-4">
-                                    <label for="created_date">Created Date :</label>
-                                    <input type="date" class="form-control @error('created_date') is-invalid @enderror"
-                                        id="created_date" name="created_date" required>
-                                    @error('created_date')
+                                    <label for="expiry_date">Expiry Date :</label>
+                                    <input type="date" class="form-control @error('expiry_date') is-invalid @enderror"
+                                        id="expiry_date" name="expiry_date" required>
+                                    @error('expiry_date')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
@@ -122,7 +122,7 @@
                                 <div class="form-group mb-4">
                                     <label for="sort_order">Sort Order:</label>
                                     <input type="number" class="form-control @error('sort_order') is-invalid @enderror"
-                                        id="sort_order" name="sort_order" value="{{ old('sort_order', $coupon->sort_order ?? 0) }}" min="0" required>
+                                        id="sort_order" name="sort_order" min="0" required>
                                     @error('sort_order')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -147,13 +147,13 @@
                             <div class="col-lg-6 mb-4">
                                 <div class="form-check form-check-inline">
                                     <label for="top-brands">Deal Exclusive</label>
-                                    <input type="checkbox" class="form-check-input" id="top-brands" name="deal-exclusive"
-                                        value="1">
+                                    <input type="checkbox" class="form-check-input" id="top-brands"
+                                        name="deal-exclusive" value="1">
                                 </div>
                                 <div class="form-check form-check-inline">
                                     <label class="form-check-label" for="popular-couponss">Verify</label>
-                                    <input type="checkbox" class="form-check-input" id="popular-couponss"
-                                        name="verify" value="1">
+                                    <input type="checkbox" class="form-check-input" id="popular-couponss" name="verify"
+                                        value="1">
                                 </div>
                             </div>
 

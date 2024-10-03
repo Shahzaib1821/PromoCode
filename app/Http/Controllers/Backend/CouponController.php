@@ -38,9 +38,13 @@ class CouponController extends Controller
             'description' => 'nullable|string',
             'deal_exclusive' => 'boolean',
             'verify' => 'boolean',
+            'sort_order' => 'required|integer|min:1',
         ]);
 
         // Set created_by field
+        $validatedData['sort_order'] = $request->has('sort_order');
+        $validatedData['deal_exclusive'] = $request->has('deal_exclusive');
+        $validatedData['verify'] = $request->has('verify');
         $validatedData['created_by'] = Auth::id();
 
         // Create the coupon using validated data
@@ -61,6 +65,7 @@ class CouponController extends Controller
 
     public function update(Request $request, Coupon $coupon)
     {
+        // Validate incoming request data
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'coupon_code' => 'required|string|max:255|unique:coupons,coupon_code,' . $coupon->id,
@@ -76,54 +81,47 @@ class CouponController extends Controller
             'sort_order' => 'required|integer|min:1',
         ]);
 
-        $oldValues = $coupon->getAttributes();
+        // Convert deal_exclusive and verify to boolean
+        $validatedData['deal_exclusive'] = $request->has('deal_exclusive');
+        $validatedData['verify'] = $request->has('verify');
+        $validatedData['updated_by'] = Auth::id(); // Set updated_by field
 
-        $validatedData['deal_exclusive'] = $request->has('deal_exclusive') ? 1 : 0;
-        $validatedData['verify'] = $request->has('verify') ? 1 : 0;
-        $validatedData['updated_by'] = Auth::id(); // Ensure updated_by is set
+        // Update the coupon
+        $coupon->update($validatedData);
 
-        $oldSortOrder = $coupon->sort_order;
-        $newSortOrder = $validatedData['sort_order'];
-
-        DB::transaction(function () use ($coupon, $validatedData, $oldSortOrder, $newSortOrder) {
-            if ($oldSortOrder != $newSortOrder) {
-                $this->reorderCoupons($coupon->store_id, $oldSortOrder, $newSortOrder);
-            }
-            $coupon->update($validatedData);
-        });
-
+        // Redirect back with a success message
         return redirect()->route('coupons.index')->with('success', 'Coupon updated successfully.');
     }
 
-    private function reorderCoupons($storeId, $oldSortOrder, $newSortOrder)
-    {
-        if ($oldSortOrder < $newSortOrder) {
-            Coupon::where('store_id', $storeId)
-                ->whereBetween('sort_order', [$oldSortOrder + 1, $newSortOrder])
-                ->decrement('sort_order');
-        } else {
-            Coupon::where('store_id', $storeId)
-                ->whereBetween('sort_order', [$newSortOrder, $oldSortOrder - 1])
-                ->increment('sort_order');
-        }
-    }
+    // private function reorderCoupons($storeId, $oldSortOrder, $newSortOrder)
+    // {
+    //     if ($oldSortOrder < $newSortOrder) {
+    //         Coupon::where('store_id', $storeId)
+    //             ->whereBetween('sort_order', [$oldSortOrder + 1, $newSortOrder])
+    //             ->decrement('sort_order');
+    //     } else {
+    //         Coupon::where('store_id', $storeId)
+    //             ->whereBetween('sort_order', [$newSortOrder, $oldSortOrder - 1])
+    //             ->increment('sort_order');
+    //     }
+    // }
 
-    public function reorder(Request $request)
-    {
-        $coupons = $request->validate([
-            'coupons' => 'required|array',
-            'coupons.*.id' => 'required|exists:coupons,id',
-            'coupons.*.sort_order' => 'required|integer|min:1',
-        ])['coupons'];
+    // public function reorder(Request $request)
+    // {
+    //     $coupons = $request->validate([
+    //         'coupons' => 'required|array',
+    //         'coupons.*.id' => 'required|exists:coupons,id',
+    //         'coupons.*.sort_order' => 'required|integer|min:1',
+    //     ])['coupons'];
 
-        DB::transaction(function () use ($coupons) {
-            foreach ($coupons as $couponData) {
-                Coupon::where('id', $couponData['id'])->update(['sort_order' => $couponData['sort_order']]);
-            }
-        });
+    //     DB::transaction(function () use ($coupons) {
+    //         foreach ($coupons as $couponData) {
+    //             Coupon::where('id', $couponData['id'])->update(['sort_order' => $couponData['sort_order']]);
+    //         }
+    //     });
 
-        return response()->json(['message' => 'Reordering successful']);
-    }
+    //     return response()->json(['message' => 'Reordering successful']);
+    // }
 
 
     public function destroy(Coupon $coupon)

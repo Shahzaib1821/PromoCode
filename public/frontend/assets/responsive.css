@@ -240,16 +240,6 @@
         /* top: -17px; */
         left: 5%;
     }
-    .nav-link{
-        font-size: 14px!important;
-        padding: 8px 4px !important;
-    }
-    li.nav-item{
-        padding: 0 !important;
-    }
-    .justify-content-sm-around{
-        justify-content: space-around !important;
-    }
 }
 
 @media (max-width: 400px) {
@@ -271,9 +261,5 @@
     .container.py-4.mt-5 {
         padding-top: 0 !important;
         margin-bottom: 0px;
-    }
-    .nav-link{
-        font-size: 12px!important;
-        padding: 8px 4px !important;
     }
 }

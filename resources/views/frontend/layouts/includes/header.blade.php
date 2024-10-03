@@ -25,10 +25,10 @@
             <ul class="navbar-nav gap-2" id="main-navbar">
                 <li class="nav-item">
                     <a class="nav-link text-white border-bottom-2" href="{{ route('home') }}">Home</a>
-                </li>
+                {{-- </li>
                 <li class="nav-item">
                     <a class="nav-link text-white border-bottom-2" href="{{ route('deals') }}">Deals</a>
-                </li>
+                </li> --}}
                 <li class="nav-item">
                     <a class="nav-link text-white border-bottom-2" href="{{ route('stores') }}">Store</a>
                 </li>
@@ -39,11 +39,11 @@
                     <a class="nav-link text-white border-bottom-2" href="{{ route('categories') }}">Categories</a>
                 </li>
             </ul>
-            <div class="search-box mobile">
+            {{-- <div class="search-box mobile">
                 <button class="btn-search"><i class="fas fa-search"></i></button>
                 <input type="text" class="input-search" id="live-search" placeholder="TYPE TO SEARCH">
                 <div id="search-results" class="search-results-dropdown"></div>
-            </div>
+            </div> --}}
         </div>
         <div class="search-box">
             <button class="btn-search"><i class="fas fa-search"></i></button>
