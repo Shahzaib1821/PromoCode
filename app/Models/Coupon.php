@@ -61,6 +61,16 @@ class Coupon extends Model
         'verify' => 'boolean',
     ];
 
+    public function isDeal()
+    {
+        return is_null($this->coupon_code); // Returns true if it is a deal
+    }
+
+    public function isCoupon()
+    {
+        return !is_null($this->coupon_code); // Returns true if it is a coupon
+    }
+
     public function store()
     {
         return $this->belongsTo(Store::class);

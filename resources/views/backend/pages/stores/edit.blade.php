@@ -82,11 +82,10 @@
 
                             <div class="col-lg-6">
                                 <div class="form-group mb-4">
-                                    <label for="subcategory-select">Category :</label>
-                                    <select name="category_id" id="subcategory-select" class="form-select" required>
+                                    <label for="category-select">Categories :</label>
+                                    <select name="category_ids[]" id="category-select" class="form-select" multiple required>
                                         @foreach ($combined as $item)
-                                            <option value="{{ $item->id }}"
-                                                {{ old('category_id', $store->category_id) == $item->id ? 'selected' : '' }}>
+                                            <option value="{{ $item->id }}" {{ $store->categories->contains($item->id) ? 'selected' : '' }}>
                                                 @if ($item->is_subcategory)
                                                     {{ $item->parent_name }} > {{ $item->name }}
                                                 @else
@@ -95,10 +94,10 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error('category_id')
-                                        <div class="invalid-feedback" role="alert">
+                                    @error('category_ids')
+                                        <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
-                                        </div>
+                                        </span>
                                     @enderror
                                 </div>
                             </div>
@@ -254,6 +253,8 @@
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -261,6 +262,27 @@
                 height: 200,
                 fontFamily: 'Poppins',
                 disableDragAndDrop: true,
+            });
+
+            $(document).ready(function() {
+                $('#category-select').select2({
+                    placeholder: 'Select categories',
+                    allowClear: true,
+                    templateResult: formatCategory
+                });
+
+                function formatCategory(category) {
+                    if (!category.element) {
+                        return category.text;
+                    }
+                    var $category = $(
+                        '<span>' + category.text + '</span>'
+                    );
+                    if ($(category.element).hasClass('main-category')) {
+                        $category.css('font-weight', 'bold');
+                    }
+                    return $category;
+                }
             });
 
             let faqCount = 0;

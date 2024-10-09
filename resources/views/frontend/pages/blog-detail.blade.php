@@ -49,15 +49,6 @@
                                 </li>
                             </ul>
                         </div>
-                        <!-- <div class="col-xl-6">
-                                                                <h2 class="mb-3 sb-inner-title d-sm-inline-block">Tag : </h2>
-                                                                <div class="social-icon tagcloud d-sm-inline-block">
-                                                                    <a href="#">Software</a>
-                                                                    <a href="#">Agency</a>
-                                                                    <a href="#">Creative</a>
-                                                                    <a href="#">Marketing</a>
-                                                                </div>
-                                                            </div> -->
                     </div>
                 </div>
                 <div class="col-lg-4">
@@ -100,17 +91,18 @@
                                 <ul>
                                     @foreach ($popularBlogs as $blog)
                                         <li>
+                                            <a href="{{ route('blog-details', ['slug' => $blog->slug]) }}">
                                             <div class="media">
-                                                <img src="{{ asset('uploads/blog/' . $blog->image) }}" alt="widget">
-                                                <div class="media-body">
-                                                    <h6 class="title">
-                                                        <a
-                                                            href="{{ route('blog-details', ['slug' => $blog->slug]) }}">{{ $blog->name }}</a>
-                                                    </h6>
-                                                    <span
-                                                        class="post-date">{{ $blog->created_at->format('F d, Y') }}</span>
+                                                    <img src="{{ asset('uploads/blog/' . $blog->image) }}" alt="widget">
+                                                    <div class="media-body">
+                                                        <h6 class="title">
+                                                            {{ $blog->name }}
+                                                        </h6>
+                                                        <span
+                                                            class="post-date">{{ $blog->created_at->format('F d, Y') }}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </a>
                                         </li>
                                     @endforeach
                                 </ul>

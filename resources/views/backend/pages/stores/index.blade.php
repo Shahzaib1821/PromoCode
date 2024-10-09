@@ -47,7 +47,7 @@
                                         <td>{{ $store->website }}</td>
                                         <td>{{ $store->creator ? $store->creator->name : '' }}</td>
                                         <td>{{ $store->updater ? $store->updater->name : '' }}</td>
-                                        <td>{{ optional(optional($store->category)->subcategory)->name ?? 'No Category' }}
+                                        <td>{!! $store->formatted_categories !!}
                                         </td>
                                         <td>
                                             <a

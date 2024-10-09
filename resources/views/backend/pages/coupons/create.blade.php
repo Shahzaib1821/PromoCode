@@ -27,7 +27,7 @@
                                 <div class="form-group mb-4">
                                     <label for="coupon_code-input">Coupons Code :</label>
                                     <input type="text" class="form-control @error('coupon_code') is-invalid @enderror"
-                                        id="coupon_code-input" name="coupon_code" placeholder="Enter coupons code" required>
+                                        id="coupon_code-input" name="coupon_code" placeholder="Enter coupons code">
                                     @error('coupon_code')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -135,7 +135,7 @@
                                 <div class="form-group mb-4">
                                     <label for="description-textarea">Description :</label>
                                     <textarea name="description" id="description-textarea" class="form-control @error('description') is-invalid @enderror"
-                                        rows="5" required>{{ old('description') }}</textarea>
+                                        rows="5">{{ old('description') }}</textarea>
                                     @error('description')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -148,7 +148,7 @@
                                 <div class="form-check form-check-inline">
                                     <label for="top-brands">Deal Exclusive</label>
                                     <input type="checkbox" class="form-check-input" id="top-brands"
-                                        name="deal-exclusive" value="1">
+                                        name="deal_exclusive" value="1">
                                 </div>
                                 <div class="form-check form-check-inline">
                                     <label class="form-check-label" for="popular-couponss">Verify</label>

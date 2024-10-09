@@ -15,7 +15,6 @@ class Store extends Model
         'slug',
         'image',
         'tagline',
-        'category_id',
         'description',
         'faqs',
         'meta_title',
@@ -60,21 +59,21 @@ class Store extends Model
         } elseif ($eventName === 'updated') {
             $changes = $activity->changes();
             $updatedFields = isset($changes['attributes']) ? array_keys($changes['attributes']) : [];
-            $updatedFields[] = 'type';  // Add 'type' to the list of updated fields
+            $updatedFields[] = 'type';
             $activity->description = "Updated " . implode(', ', array_unique($updatedFields)) . " for store '{$this->name}'";
         } elseif ($eventName === 'deleted') {
             $activity->description = "Store '{$this->name}' was deleted";
         }
     }
 
-    public function subcategory()
+    public function categories()
     {
-        return $this->belongsTo(SubCategory::class);
+        return $this->belongsToMany(Category::class, 'category_store'); // Assuming a pivot table for many-to-many relationship
     }
 
-    public function category()
+    public function subcategory()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class, 'subcategory_id'); // For the subcategory (if there's a separate column)
     }
 
     public function coupons()

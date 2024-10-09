@@ -43,7 +43,7 @@
                         </tr>
                         <tr>
                             <td class="py-2">Total Offers</td>
-                            <td class="py-2">{{ $coupons->count() + $deals->count() }}</td>
+                            <td class="py-2">{{ $coupons->count() }}</td>
                         </tr>
                         <tr>
                             <td class="py-2">Coupon Codes</td>
@@ -72,13 +72,17 @@
                     @endforeach
                 </ul>
 
-                <h4>Categories</h4>
+                <h4>Related Stores</h4>
                 <ul class="list-unstyled">
-                    @foreach ($categories as $category)
-                        <li><a href="{{ route('categories', ['active' => $category->slug]) }}">{{ $category->name }}</a>
+                    @forelse ($relatedStores as $relatedStore)
+                        <li><a
+                                href="{{ route('stores-details', ['slug' => $relatedStore->slug]) }}">{{ $relatedStore->name }}</a>
                         </li>
-                    @endforeach
+                    @empty
+                        <li>No related stores found.</li>
+                    @endforelse
                 </ul>
+
             </div>
 
             <main class="col-sm-12 col-md-12 col-lg-8">
@@ -105,47 +109,48 @@
 
                     <!-- Store Details Section -->
                     <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
-                        <h3 class="mb-4">Available Coupons</h3>
+                        <h3 class="mb-4">Available Offers</h3>
                         <div class="row">
-                            @forelse ($coupons as $coupon)
+                            @forelse ($coupons as $offer)
                                 <div class="col-lg-12 col-md-6 col-sm-6 col-xs-12">
                                     <div class="list-body showAll showCoupon">
-                                        <span id="coupon-{{ $coupon->id }}-expiry"
-                                            style="display: none;">{{ $coupon->expiry_date->format('d-F-Y') }}</span>
+                                        <span id="offer-{{ $offer->id }}-expiry" style="display: none;">
+                                            {{ $offer->expiry_date->format('d-F-Y') }}
+                                        </span>
                                         <div class="list-content row align-items-center mx-auto">
                                             <div class="col-lg-9 col-md-7">
                                                 <div class="row">
                                                     <div class="col-lg-4 col-md-4 col-sm-12 p-0">
                                                         <div class="list-left left-code term">
                                                             <a rel="nofollow" class="txtLink"
-                                                                href="javascript:sanitizeURL({{ $coupon->id }});">
-                                                                <div class="one32">{{ e($coupon->discounted_price) }}
-                                                                </div>
-                                                                {{-- <div class="one32">Off</div> --}}
+                                                                href="javascript:sanitizeURL({{ $offer->id }});">
+                                                                <div class="one32">{{ e($offer->discounted_price) }}</div>
                                                             </a>
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-8 col-md-8 col-sm-12">
                                                         <div class="list-center">
                                                             <div class="top-content">
-                                                                @if ($coupon->verify == 1)
+                                                                @if ($offer->verify == 1)
                                                                     <div class="verified">
                                                                         <span class="Verify">Verify</span>
                                                                     </div>
                                                                 @endif
-                                                                @if ($coupon->deal_exclusive == 1)
+                                                                @if ($offer->deal_exclusive == 1)
                                                                     <div class="verified">
                                                                         <span class="Verify">Exclusive</span>
                                                                     </div>
                                                                 @endif
                                                             </div>
                                                             <a rel="nofollow" class="txtLink"
-                                                                href="javascript:sanitizeURL({{ $coupon->id }});">
-                                                                <h3 class="center-title">{{ $coupon->name }}</h3>
+                                                                href="javascript:sanitizeURL({{ $offer->id }});">
+                                                                <h3 class="center-title">{{ $offer->name }}</h3>
                                                             </a>
                                                             <div class="center-dsc">
-                                                                <p class="list-dsc-content">Coupon expires at:
-                                                                    {{ $coupon->expiry_date->format('d-F-Y') }}</p>
+                                                                <p class="list-dsc-content">
+                                                                    {{ $offer->type === 'deal' ? 'Deal expires at:' : 'Coupon expires at:' }}
+                                                                    {{ $offer->expiry_date->format('d-F-Y') }}
+                                                                </p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -153,80 +158,29 @@
                                             </div>
                                             <div class="col-lg-3 col-md-5">
                                                 <div class="list-right py-3 justify-content-center">
-                                                    <button class="button has-code w-100"
-                                                        onclick="openCodeModal('{{ $coupon->id }}', '{{ $coupon->coupon_code }}', '{{ $coupon->affiliated_link }}')">
-                                                        Get Code
-                                                        <span class="peel-code"><em
-                                                                class="peel-text">{{ $coupon->coupon_code }}</em></span>
-                                                    </button>
+                                                    @if (!empty($offer->coupon_code))
+                                                        <button class="button has-code w-100"
+                                                            onclick="openCodeModal('{{ $offer->id }}', '{{ $offer->coupon_code }}', '{{ $offer->affiliated_link }}')">
+                                                            Get Code
+                                                            <span class="peel-code"><em
+                                                                    class="peel-text">{{ $offer->coupon_code }}</em></span>
+                                                        </button>
+                                                    @elseif (empty($offer->coupon_code))
+                                                        <button class="button has-deal w-100"
+                                                            onclick="openDealModal('{{ $offer->id }}', '{{ $offer->affiliated_link }}')">
+                                                            Get Deal
+                                                        </button>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             @empty
-                                <p>No coupons right now</p>
+                                <p>No offers right now.</p>
                             @endforelse
                         </div>
 
-                        <h3 class="mb-4">Available Deals</h3>
-                        @forelse ($deals as $deal)
-                            <div class="col-lg-12 col-md-6 col-sm-6 col-xs-12">
-                                <div class="list-body showAll showCoupon">
-                                    <span id="deal-{{ $deal->id }}-expiry"
-                                        style="display: none;">{{ $deal->expiry_date->format('d-F-Y') }}</span>
-                                    <div class="list-content row align-items-center mx-auto">
-                                        <div class="col-lg-9 col-md-7">
-                                            <div class="row">
-                                                <div class="col-lg-4 col-md-4 col-sm-12 p-0">
-                                                    <div class="list-left left-code term">
-                                                        <a rel="nofollow" class="txtLink"
-                                                            href="javascript:sanitizeURL({{ $deal->id }});">
-                                                            <div class="one32">{{ e($deal->discounted_price) }}</div>
-                                                            {{-- <div class="one32">Off</div> --}}
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-8 col-md-8 col-sm-12">
-                                                    <div class="list-center">
-                                                        <div class="top-content">
-                                                            @if ($deal->verify == 1)
-                                                                <div class="verified">
-                                                                    <span class="Verify">Verify</span>
-                                                                </div>
-                                                            @endif
-                                                            @if ($deal->deal_exclusive == 1)
-                                                                <div class="verified">
-                                                                    <span class="Verify">Exclusive</span>
-                                                                </div>
-                                                            @endif
-                                                        </div>
-                                                        <a rel="nofollow" class="txtLink"
-                                                            href="javascript:sanitizeURL({{ $deal->id }});">
-                                                            <h3 class="center-title">{{ $deal->name }}</h3>
-                                                        </a>
-                                                        <div class="center-dsc">
-                                                            <p class="list-dsc-content">Deal expires at:
-                                                                {{ $deal->expiry_date->format('d-F-Y') }}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-5">
-                                            <div class="list-right py-3 justify-content-center">
-                                                <button class="button has-code w-100"
-                                                    onclick="openDealModal('{{ $deal->id }}', '{{ $deal->affiliated_link }}')">
-                                                    Get Deal
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @empty
-                            <p>No deal right now.</p>
-                        @endforelse
                         <h3 class="mb-4">Store Details</h3>
 
                         <!-- Store Video -->
@@ -266,65 +220,76 @@
                     <div class="tab-pane fade" id="coupons" role="tabpanel" aria-labelledby="coupons-tab">
                         <h3 class="mb-4">Available Coupons</h3>
                         <div class="row">
-                            @forelse ($coupons as $coupon)
-                                <div class="col-lg-12 col-md-6 col-sm-6 col-xs-12">
-                                    <div class="list-body showAll showCoupon">
-                                        <span id="coupon-{{ $coupon->id }}-expiry"
-                                            style="display: none;">{{ $coupon->expiry_date->format('d-F-Y') }}</span>
-                                        <div class="list-content row align-items-center mx-auto">
-                                            <div class="col-lg-9 col-md-7">
-                                                <div class="row">
-                                                    <div class="col-lg-4 col-md-4 col-sm-12 p-0">
-                                                        <div class="list-left left-code term">
-                                                            <a rel="nofollow" class="txtLink"
-                                                                href="javascript:sanitizeURL({{ $coupon->id }});">
-                                                                <div class="one32">{{ e($coupon->discounted_price) }}
-                                                                </div>
-                                                                {{-- <div class="one32">Off</div> --}}
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-8 col-md-8 col-sm-12">
-                                                        <div class="list-center">
-                                                            <div class="top-content">
-                                                                @if ($coupon->verify == 1)
-                                                                    <div class="verified">
-                                                                        <span class="Verify">Verify</span>
+                            @forelse ($coupons as $offer)
+                                @if (!empty($offer->coupon_code))
+                                    <div class="col-lg-12 col-md-6 col-sm-6 col-xs-12">
+                                        <div class="list-body showAll showCoupon">
+                                            <span id="offer-{{ $offer->id }}-expiry" style="display: none;">
+                                                {{ $offer->expiry_date->format('d-F-Y') }}
+                                            </span>
+                                            <div class="list-content row align-items-center mx-auto">
+                                                <div class="col-lg-9 col-md-7">
+                                                    <div class="row">
+                                                        <div class="col-lg-4 col-md-4 col-sm-12 p-0">
+                                                            <div class="list-left left-code term">
+                                                                <a rel="nofollow" class="txtLink"
+                                                                    href="javascript:sanitizeURL({{ $offer->id }});">
+                                                                    <div class="one32">{{ e($offer->discounted_price) }}
                                                                     </div>
-                                                                @endif
-                                                                @if ($coupon->deal_exclusive == 1)
-                                                                    <div class="verified">
-                                                                        <span class="Verify">Exclusive</span>
-                                                                    </div>
-                                                                @endif
+                                                                </a>
                                                             </div>
-                                                            <a rel="nofollow" class="txtLink"
-                                                                href="javascript:sanitizeURL({{ $coupon->id }});">
-                                                                <h3 class="center-title">{{ $coupon->name }}</h3>
-                                                            </a>
-                                                            <div class="center-dsc">
-                                                                <p class="list-dsc-content">Coupon expires at:
-                                                                    {{ $coupon->expiry_date->format('d-F-Y') }}</p>
+                                                        </div>
+                                                        <div class="col-lg-8 col-md-8 col-sm-12">
+                                                            <div class="list-center">
+                                                                <div class="top-content">
+                                                                    @if ($offer->verify == 1)
+                                                                        <div class="verified">
+                                                                            <span class="Verify">Verify</span>
+                                                                        </div>
+                                                                    @endif
+                                                                    @if ($offer->deal_exclusive == 1)
+                                                                        <div class="verified">
+                                                                            <span class="Verify">Exclusive</span>
+                                                                        </div>
+                                                                    @endif
+                                                                </div>
+                                                                <a rel="nofollow" class="txtLink"
+                                                                    href="javascript:sanitizeURL({{ $offer->id }});">
+                                                                    <h3 class="center-title">{{ $offer->name }}</h3>
+                                                                </a>
+                                                                <div class="center-dsc">
+                                                                    <p class="list-dsc-content">
+                                                                        {{ $offer->type === 'deal' ? 'Deal expires at:' : 'Coupon expires at:' }}
+                                                                        {{ $offer->expiry_date->format('d-F-Y') }}
+                                                                    </p>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-lg-3 col-md-5">
-                                                <div class="list-right py-3 justify-content-center">
-                                                    <button class="button has-code w-100"
-                                                        onclick="openCodeModal('{{ $coupon->id }}', '{{ $coupon->coupon_code }}', '{{ $coupon->affiliated_link }}')">
-                                                        Get Code
-                                                        <span class="peel-code"><em
-                                                                class="peel-text">{{ $coupon->coupon_code }}</em></span>
-                                                    </button>
+                                                <div class="col-lg-3 col-md-5">
+                                                    <div class="list-right py-3 justify-content-center">
+                                                        @if (!empty($offer->coupon_code))
+                                                            <button class="button has-code w-100"
+                                                                onclick="openCodeModal('{{ $offer->id }}', '{{ $offer->coupon_code }}', '{{ $offer->affiliated_link }}')">
+                                                                Get Code
+                                                                <span class="peel-code"><em
+                                                                        class="peel-text">{{ $offer->coupon_code }}</em></span>
+                                                            </button>
+                                                        @elseif (empty($offer->coupon_code))
+                                                            <button class="button has-deal w-100"
+                                                                onclick="openDealModal('{{ $offer->id }}', '{{ $offer->affiliated_link }}')">
+                                                                Get Deal
+                                                            </button>
+                                                        @endif
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                @endif
                             @empty
-                                <p>No coupons right now</p>
+                                <p>No offers right now.</p>
                             @endforelse
                         </div>
                     </div>
@@ -332,63 +297,79 @@
                     <!-- Deals Section -->
                     <div class="tab-pane fade" id="deals" role="tabpanel" aria-labelledby="deals-tab">
                         <h3 class="mb-4">Available Deals</h3>
-                        @forelse ($deals as $deal)
-                            <div class="col-lg-12 col-md-6 col-sm-6 col-xs-12">
-                                <div class="list-body showAll showCoupon">
-                                    <span id="deal-{{ $deal->id }}-expiry"
-                                        style="display: none;">{{ $deal->expiry_date->format('d-F-Y') }}</span>
-                                    <div class="list-content row align-items-center mx-auto">
-                                        <div class="col-lg-9 col-md-7">
-                                            <div class="row">
-                                                <div class="col-lg-4 col-md-4 col-sm-12 p-0">
-                                                    <div class="list-left left-code term">
-                                                        <a rel="nofollow" class="txtLink"
-                                                            href="javascript:sanitizeURL({{ $deal->id }});">
-                                                            <div class="one32">{{ e($deal->discounted_price) }}</div>
-                                                            {{-- <div class="one32">Off</div> --}}
-                                                        </a>
+                        <div class="row">
+                            @forelse ($coupons as $offer)
+                                @if (empty($offer->coupon_code))
+                                    <div class="col-lg-12 col-md-6 col-sm-6 col-xs-12">
+                                        <div class="list-body showAll showCoupon">
+                                            <span id="offer-{{ $offer->id }}-expiry" style="display: none;">
+                                                {{ $offer->expiry_date->format('d-F-Y') }}
+                                            </span>
+                                            <div class="list-content row align-items-center mx-auto">
+                                                <div class="col-lg-9 col-md-7">
+                                                    <div class="row">
+                                                        <div class="col-lg-4 col-md-4 col-sm-12 p-0">
+                                                            <div class="list-left left-code term">
+                                                                <a rel="nofollow" class="txtLink"
+                                                                    href="javascript:sanitizeURL({{ $offer->id }});">
+                                                                    <div class="one32">{{ e($offer->discounted_price) }}
+                                                                    </div>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-8 col-md-8 col-sm-12">
+                                                            <div class="list-center">
+                                                                <div class="top-content">
+                                                                    @if ($offer->verify == 1)
+                                                                        <div class="verified">
+                                                                            <span class="Verify">Verify</span>
+                                                                        </div>
+                                                                    @endif
+                                                                    @if ($offer->deal_exclusive == 1)
+                                                                        <div class="verified">
+                                                                            <span class="Verify">Exclusive</span>
+                                                                        </div>
+                                                                    @endif
+                                                                </div>
+                                                                <a rel="nofollow" class="txtLink"
+                                                                    href="javascript:sanitizeURL({{ $offer->id }});">
+                                                                    <h3 class="center-title">{{ $offer->name }}</h3>
+                                                                </a>
+                                                                <div class="center-dsc">
+                                                                    <p class="list-dsc-content">
+                                                                        {{ $offer->type === 'deal' ? 'Deal expires at:' : 'Coupon expires at:' }}
+                                                                        {{ $offer->expiry_date->format('d-F-Y') }}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-8 col-md-8 col-sm-12">
-                                                    <div class="list-center">
-                                                        <div class="top-content">
-                                                            @if ($deal->verify == 1)
-                                                                <div class="verified">
-                                                                    <span class="Verify">Verify</span>
-                                                                </div>
-                                                            @endif
-                                                            @if ($deal->deal_exclusive == 1)
-                                                                <div class="verified">
-                                                                    <span class="Verify">Exclusive</span>
-                                                                </div>
-                                                            @endif
-                                                        </div>
-                                                        <a rel="nofollow" class="txtLink"
-                                                            href="javascript:sanitizeURL({{ $deal->id }});">
-                                                            <h3 class="center-title">{{ $deal->name }}</h3>
-                                                        </a>
-                                                        <div class="center-dsc">
-                                                            <p class="list-dsc-content">Deal expires at:
-                                                                {{ $deal->expiry_date->format('d-F-Y') }}</p>
-                                                        </div>
+                                                <div class="col-lg-3 col-md-5">
+                                                    <div class="list-right py-3 justify-content-center">
+                                                        @if (!empty($offer->coupon_code))
+                                                            <button class="button has-code w-100"
+                                                                onclick="openCodeModal('{{ $offer->id }}', '{{ $offer->coupon_code }}', '{{ $offer->affiliated_link }}')">
+                                                                Get Code
+                                                                <span class="peel-code"><em
+                                                                        class="peel-text">{{ $offer->coupon_code }}</em></span>
+                                                            </button>
+                                                        @elseif (empty($offer->coupon_code))
+                                                            <button class="button has-deal w-100"
+                                                                onclick="openDealModal('{{ $offer->id }}', '{{ $offer->affiliated_link }}')">
+                                                                Get Deal
+                                                            </button>
+                                                        @endif
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-5">
-                                            <div class="list-right py-3 justify-content-center">
-                                                <button class="button has-code w-100"
-                                                    onclick="openDealModal('{{ $deal->id }}', '{{ $deal->affiliated_link }}')">
-                                                    Get Deal
-                                                </button>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        @empty
-                            <p>No deals available right now</p>
-                        @endforelse
+                                @endif
+                            @empty
+                                <p>No offers right now.</p>
+                            @endforelse
+                        </div>
                     </div>
 
                 </div>
@@ -440,31 +421,6 @@
         </div>
     </div>
 
-    {{-- <div class="modal fade" id="dealModal" tabindex="-1" role="dialog" aria-labelledby="dealModal"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header" style="border:none">
-                    <h4 class="modal-title" id="myModalLabel">Deal Information</h4>
-                    <button type="button" class="close fs-2" onclick="$('#dealModal').modal('hide');">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-center">
-                    <a id="modalStoreLink" href="#">
-                        <img id="modalStoreImage" alt="Exclusive Deal" src=""
-                            style="border: 1px solid #000;border-radius: 64px;margin-bottom: 1rem;">
-                    </a>
-                    <p style="font-weight: 600;">Exclusive Deals & Discounts</p>
-                    <p style="margin-top:1rem">Visit the store at <a id="modalStoreName" href="#"
-                            style="border-bottom:1px solid #000;"></a></p>
-                </div>
-                <div class="modal-footer text-center" style="background-color: #b0b0b026;">
-                    <p class="p-2 rounded w-100" id="modalExpiryDate"></p>
-                </div>
-            </div>
-        </div>
-    </div> --}}
     <div class="modal fade" id="dealModal" tabindex="-1" role="dialog" aria-labelledby="dealModal"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -496,7 +452,7 @@
                                         </path>
                                     </g>
                                 </svg>
-                                <div class="text">Get Deal</div>
+                                <div class="deal-text">Get Deal</div>
                             </div>
                         </button>
                     </div>
@@ -514,29 +470,29 @@
 
 @section('scripts')
     <script>
-        function openCodeModal(couponId, couponCode, affiliatedLink) {
-            var currentUrl = window.location.href.split('?')[0];
-            var modalUrl = currentUrl + '?openModal=true&couponId=' + couponId;
-
-            sessionStorage.setItem('tempCouponCode', couponCode);
-
-            // Open new tab with modal URL
-            window.open(modalUrl, '_blank');
-
-            // Redirect to the affiliated link in the current tab
-            window.location.href = affiliatedLink;
-        }
-
         function copyToClipboard() {
             var couponCode = document.getElementById('modalCouponCode').textContent;
             navigator.clipboard.writeText(couponCode).then(function() {
-                alert('Coupon code copied to clipboard!');
+                var button = document.querySelector('.Btn');
+                button.innerHTML = '<div class="svgWrapper">' +
+                    '<svg xml:space="preserve" viewBox="0 0 6.35 6.35" y="0" x="0" height="20" width="20" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/2000/svg" class="clipboard">' +
+                    '<g><path fill="currentColor" d="M2.43.265c-.3 0-.548.236-.573.53h-.328a.74.74 0 0 0-.735.734v3.822a.74.74 0 0 0 .735.734H4.82a.74.74 0 0 0 .735-.734V1.529a.74.74 0 0 0-.735-.735h-.328a.58.58 0 0 0-.573-.53zm0 .529h1.49c.032 0 .049.017.049.049v.431c0 .032-.017.049-.049.049H2.43c-.032 0-.05-.017-.05-.049V.843c0-.032.018-.05.05-.05zm-.901.53h.328c.026.292.274.528.573.528h1.49a.58.58 0 0 0 .573-.529h.328a.2.2 0 0 1 .206.206v3.822a.2.2 0 0 1-.206.205H1.53a.2.2 0 0 1-.206-.205V1.529a.2.2 0 0 1 .206-.206z"></path></g></svg>' +
+                    '<div class="text">Copied!</div>' +
+                    '</div>';
+
+                // Reset the button text after 2 seconds
+                setTimeout(function() {
+                    button.innerHTML = '<div class="svgWrapper">' +
+                        '<svg xml:space="preserve" viewBox="0 0 6.35 6.35" y="0" x="0" height="20" width="20" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/2000/svg" class="clipboard">' +
+                        '<g><path fill="currentColor" d="M2.43.265c-.3 0-.548.236-.573.53h-.328a.74.74 0 0 0-.735.734v3.822a.74.74 0 0 0 .735.734H4.82a.74.74 0 0 0 .735-.734V1.529a.74.74 0 0 0-.735-.735h-.328a.58.58 0 0 0-.573-.53zm0 .529h1.49c.032 0 .049.017.049.049v.431c0 .032-.017.049-.049.049H2.43c-.032 0-.05-.017-.05-.049V.843c0-.032.018-.05.05-.05zm-.901.53h.328c.026.292.274.528.573.528h1.49a.58.58 0 0 0 .573-.529h.328a.2.2 0 0 1 .206.206v3.822a.2.2 0 0 1-.206.205H1.53a.2.2 0 0 1-.206-.205V1.529a.2.2 0 0 1 .206-.206z"></path></g></svg>' +
+                        '<div class="text" id="modalCouponCode">' + couponCode + '</div>' +
+                        '</div>';
+                }, 2000);
             }, function(err) {
                 console.error('Could not copy text: ', err);
             });
         }
 
-        // Function to parse URL parameters
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
             var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
@@ -544,23 +500,36 @@
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
 
-        // Check if we need to open the modal on page load
+        // Function to open code modal
+        function openCodeModal(couponId, couponCode, affiliatedLink) {
+            var currentUrl = window.location.href.split('?')[0];
+            var modalUrl = currentUrl + '?openModal=true&couponId=' + couponId;
+
+            sessionStorage.setItem('tempCouponCode', couponCode);
+            sessionStorage.setItem('tempCouponId', couponId);
+
+            window.open(modalUrl, '_blank');
+            window.location.href = affiliatedLink;
+        }
+
         $(document).ready(function() {
             var openModal = getUrlParameter('openModal');
             if (openModal === 'true') {
                 var couponId = getUrlParameter('couponId');
+                if (!couponId) {
+                    couponId = sessionStorage.getItem('tempCouponId');
+                }
                 var couponCode = sessionStorage.getItem('tempCouponCode');
-                // Clear the coupon code from session storage
                 sessionStorage.removeItem('tempCouponCode');
-                // Get store details from the page
+                sessionStorage.removeItem('tempCouponId');
+
                 var $storeElement = $('.store-header');
                 var storeName = $storeElement.find('h2').text().trim();
                 var storeWebsite = $storeElement.find('a.store-img').attr('href');
                 var storeImage = $storeElement.find('a.store-img').css('background-image').replace(/url\(['"]?/, '')
                     .replace(/['"]?\)/, '');
 
-                // Get coupon expiry date
-                var expiryDate = $('#coupon-' + couponId + '-expiry').text();
+                var expiryDate = $('#offer-' + couponId + '-expiry').text().trim();
 
                 $('#modalCouponCode').text(couponCode);
                 $('#modalExpiryDate').text('Deal will expire on: ' + expiryDate);
@@ -569,6 +538,47 @@
                 $('#modalStoreName').text(storeName).attr('href', storeWebsite);
 
                 $('#codeModal').modal('show');
+            }
+        });
+
+        // Function to open deal modal
+        function openDealModal(dealId, affiliatedLink) {
+            var currentUrl = window.location.href.split('?')[0];
+            var modalUrl = currentUrl + '?openDealModal=true&dealId=' + dealId;
+
+            sessionStorage.setItem('tempDealId', dealId);
+
+            window.open(modalUrl, '_blank');
+            window.location.href = affiliatedLink;
+        }
+
+        // Check if we need to open the deal modal on page load
+        $(document).ready(function() {
+            var openDealModal = getUrlParameter('openDealModal');
+            if (openDealModal === 'true') {
+                var dealId = getUrlParameter('dealId');
+                if (!dealId) {
+                    dealId = sessionStorage.getItem('tempDealId');
+                    sessionStorage.removeItem('tempDealId');
+                }
+
+                var $storeElement = $('.store-header');
+                var storeName = $storeElement.find('h2').text().trim();
+                var storeWebsite = $storeElement.find('a.store-img').attr('href');
+                var storeImage = $storeElement.find('a.store-img').css('background-image').replace(/url\(['"]?/, '')
+                    .replace(/['"]?\)/, '');
+
+                var $dealElement = $('[id^="offer-' + dealId + '"]').closest('.list-body');
+                var dealText = $dealElement.find('.center-title').text().trim();
+                var expiryDate = $('#offer-' + dealId + '-expiry').text().trim();
+
+                $('#modalDealText').text(dealText);
+                $('#modalDealExpiryDate').text('Deal will expire on: ' + expiryDate);
+                $('#modalDealStoreImage').attr('src', storeImage);
+                $('#modalDealStoreLink').attr('href', storeWebsite);
+                $('#modalDealStoreName').text(storeName).attr('href', storeWebsite);
+
+                $('#dealModal').modal('show');
             }
         });
         $(document).ready(function() {
@@ -598,51 +608,6 @@
                     });
                 }
             });
-        });
-
-        function openDealModal(dealId, affiliatedLink) {
-            var currentUrl = window.location.href.split('?')[0];
-            var modalUrl = currentUrl + '?openDealModal=true&dealId=' + dealId;
-
-            sessionStorage.setItem('tempDealId', dealId);
-
-            // Open new tab with modal URL
-            window.open(modalUrl, '_blank');
-
-            // Redirect to the affiliated link in the current tab
-            window.location.href = affiliatedLink;
-        }
-
-        // Check if we need to open the deal modal on page load
-        $(document).ready(function() {
-            var openDealModal = getUrlParameter('openDealModal');
-            if (openDealModal === 'true') {
-                var dealId = getUrlParameter('dealId');
-                if (!dealId) {
-                    dealId = sessionStorage.getItem('tempDealId');
-                    sessionStorage.removeItem('tempDealId');
-                }
-
-                // Get store details from the page
-                var $storeElement = $('.store-header');
-                var storeName = $storeElement.find('h2').text().trim();
-                var storeWebsite = $storeElement.find('a.store-img').attr('href');
-                var storeImage = $storeElement.find('a.store-img').css('background-image').replace(/url\(['"]?/, '')
-                    .replace(/['"]?\)/, '');
-
-                // Get deal details
-                var $dealElement = $('[id^="deal-' + dealId + '"]').closest('.list-body');
-                var dealText = $dealElement.find('.center-title').text().trim();
-                var expiryDate = $('#deal-' + dealId + '-expiry').text();
-
-                $('#modalDealText').text(dealText);
-                $('#modalDealExpiryDate').text('Deal will expire on: ' + expiryDate);
-                $('#modalDealStoreImage').attr('src', storeImage);
-                $('#modalDealStoreLink').attr('href', storeWebsite);
-                $('#modalDealStoreName').text(storeName).attr('href', storeWebsite);
-
-                $('#dealModal').modal('show');
-            }
         });
     </script>
 @endsection

@@ -13,7 +13,7 @@ class Category extends Model
 
     public function stores()
     {
-        return $this->hasMany(Store::class);
+        return $this->belongsToMany(Store::class, 'category_store'); // Many-to-many relationship
     }
     public function parent()
     {
@@ -26,6 +26,7 @@ class Category extends Model
     }
     public function subcategories()
     {
-        return $this->hasMany(SubCategory::class);
+        return $this->hasMany(Category::class, 'parent_id');
     }
+
 }

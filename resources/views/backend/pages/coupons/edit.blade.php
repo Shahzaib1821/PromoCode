@@ -39,7 +39,7 @@
                                     <label for="coupon_code-input">Coupons Code :</label>
                                     <input type="text" class="form-control @error('coupon_code') is-invalid @enderror"
                                         id="coupon_code-input" name="coupon_code" placeholder="Enter coupon code"
-                                        value="{{ old('coupon_code', $coupon->coupon_code) }}" required>
+                                        value="{{ old('coupon_code', $coupon->coupon_code) }}">
                                     @error('coupon_code')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -158,7 +158,7 @@
                                 <div class="form-group mb-4">
                                     <label for="description-textarea">Description :</label>
                                     <textarea name="description" id="description-textarea"
-                                        class="form-control @error('description') is-invalid @enderror" rows="5" required>{{ old('description', $coupon->description) }}</textarea>
+                                        class="form-control @error('description') is-invalid @enderror" rows="5">{{ old('description', $coupon->description) }}</textarea>
                                     @error('description')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>

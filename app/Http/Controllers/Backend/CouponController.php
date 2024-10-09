@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Store;
 use App\Models\Coupon;
+use App\Models\Deal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,7 @@ class CouponController extends Controller
     public function index(Request $request)
     {
         $coupons = Coupon::with('store')->get();
+
         return view('backend.pages.coupons.index', compact('coupons'));
     }
 
@@ -28,7 +30,7 @@ class CouponController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'coupon_code' => 'required|string|max:255|unique:coupons',
+            'coupon_code' => 'nullable|string|max:255|unique:coupons',
             'store_id' => 'required|exists:stores,id',
             'discounted_price' => 'required|string|max:255',
             'expiry_date' => 'required|date',
@@ -41,17 +43,24 @@ class CouponController extends Controller
             'sort_order' => 'required|integer|min:1',
         ]);
 
-        // Set created_by field
+        // Assign default values where necessary
         $validatedData['sort_order'] = $request->has('sort_order');
         $validatedData['deal_exclusive'] = $request->has('deal_exclusive');
         $validatedData['verify'] = $request->has('verify');
         $validatedData['created_by'] = Auth::id();
 
-        // Create the coupon using validated data
-        $coupon = Coupon::create($validatedData);
+        // If 'coupon_code' is null, it becomes a deal
+        if ($request->filled('coupon_code')) {
+            $validatedData['coupon_code'] = $request->input('coupon_code');
+        } else {
+            $validatedData['coupon_code'] = null;  // Mark it as a deal
+        }
 
-        return redirect()->route('coupons.index')->with('success', 'Coupon created successfully.');
+        Coupon::create($validatedData);
+
+        return redirect()->route('coupons.index')->with('success', 'Record created successfully.');
     }
+
     public function show(Coupon $coupon)
     {
         return view('backend.pages.coupons.show', compact('coupon'));
@@ -63,19 +72,29 @@ class CouponController extends Controller
         return view('backend.pages.coupons.edit', compact('coupon', 'stores'));
     }
 
+    // public function edit(Coupon $coupon)
+    // {
+    //     if ($coupon->isDeal()) {
+    //         // Render deal edit page
+    //     } else {
+    //         // Render coupon edit page
+    //     }
+    // }
+
+
     public function update(Request $request, Coupon $coupon)
     {
         // Validate incoming request data
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'coupon_code' => 'required|string|max:255|unique:coupons,coupon_code,' . $coupon->id,
+            'coupon_code' => 'nullable|string|max:255|unique:coupons,coupon_code,' . $coupon->id, // Make coupon_code nullable
             'store_id' => 'required|exists:stores,id',
             'discounted_price' => 'required|string|max:255',
             'expiry_date' => 'required|date',
             'created_date' => 'required|date',
             'affiliated_link' => 'nullable|url|max:255',
             'status' => 'required|boolean',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'deal_exclusive' => 'nullable|boolean',
             'verify' => 'nullable|boolean',
             'sort_order' => 'required|integer|min:1',
@@ -86,11 +105,21 @@ class CouponController extends Controller
         $validatedData['verify'] = $request->has('verify');
         $validatedData['updated_by'] = Auth::id(); // Set updated_by field
 
-        // Update the coupon
-        $coupon->update($validatedData);
+        // Check if coupon_code is provided
+        if ($request->filled('coupon_code')) {
+            // Update the coupon with coupon code
+            $coupon->fill($validatedData);
+        } else {
+            // Convert to deal if coupon code is not provided
+            $coupon->fill($validatedData);
+            $coupon->coupon_code = null; // Clear the coupon code
+        }
+
+        // Save the updated coupon/deal
+        $coupon->save();
 
         // Redirect back with a success message
-        return redirect()->route('coupons.index')->with('success', 'Coupon updated successfully.');
+        return redirect()->route('coupons.index')->with('success', 'Coupon/Deal updated successfully.');
     }
 
     // private function reorderCoupons($storeId, $oldSortOrder, $newSortOrder)

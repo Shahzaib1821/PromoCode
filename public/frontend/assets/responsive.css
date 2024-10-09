@@ -183,6 +183,7 @@
 
     .header-heading {
         font-size: 24px;
+        margin-bottom: 10px !important;
     }
 }
 
@@ -255,7 +256,8 @@
     }
 
     .lead {
-        display: none !important;
+        /* display: none !important; */
+        font-size: .95rem;
     }
 
     .container.py-4.mt-5 {

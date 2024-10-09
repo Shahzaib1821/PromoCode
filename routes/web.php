@@ -13,7 +13,6 @@ Route::get('/blogs', [PagesController::class, 'blogs'])->name('blogs');
 Route::get('/blog/{slug}', [PagesController::class, 'blogDetail'])->name('blog-details');
 Route::get('/blogs/search', [PagesController::class, 'search'])->name('blogs.search');
 Route::get('/live-search', [SearchController::class, 'liveSearch'])->name('live-search');
-
 // Footer
 Route::get('/about', [PagesController::class, 'about'])->name('about');
 Route::get('/saving-tips', [PagesController::class, 'savingTips'])->name('saving-tips');

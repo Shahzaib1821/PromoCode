@@ -25,12 +25,12 @@ class PagesController extends Controller
     {
         $categories = Category::where('status', 1)->where('parent_id', null)->take(7)->get();
         $stores = Store::where('status', 1)->get();
-        $mainBlog = Blog::where('id', 1)->where('status', 1)->get();
+        $mainBlog = Blog::where('featured_blog', true)->where('status', 1)->get();
         $blogPosts = Blog::where('top_blog', true)->where('status', 1)->get();
         $saleBanner = Banner::where('is_active', true)->where('type', 'sale')->first();
         $eventBanner = Banner::where('is_active', true)->where('type', 'event')->first();
         $sliders = Slider::all();
-        $deals = Deal::where('status', 1)->where('top_deal', true)->take(8)->get();
+        $deals = Coupon::where('status', 1)->where('coupon_code', null)->take(8)->get();
         return view('frontend.pages.home', compact('categories', 'stores', 'mainBlog', 'blogPosts', 'saleBanner', 'eventBanner', 'sliders', 'deals'));
     }
 
@@ -144,24 +144,44 @@ class PagesController extends Controller
         return view('frontend.pages.saving-tips', compact('popularStores'));
     }
 
+    // public function category(Request $request)
+    // {
+    //     $categories = Category::with(['subcategories', 'stores'])
+    //         ->whereNull('parent_id')
+    //         ->orWhere('parent_id', 0)
+    //         ->get();
+
+    //     foreach ($categories as $category) {
+    //         $category->allStores = $category->stores->concat(
+    //             $category->subcategories->flatMap->stores
+    //         )->unique('id');
+    //     }
+
+    //     return view('frontend.pages.categories', compact('categories'));
+    // }
+
     public function category(Request $request)
     {
-        $categories = Category::with('subcategories')->get(); // Fetch categories with subcategories
-        $stores = Store::with('subcategory')->get(); // Fetch stores with their subcategory
-        $activeCategory = null;
-        $subcategories = [];
+        // Load categories with subcategories and stores (eager load relationships)
+        $categories = Category::with(['subcategories', 'stores'])->whereNull('parent_id')->get();
 
-        if ($categories->isNotEmpty()) {
-            $activeCategory = $request->query('active') ?: $categories->first()->slug;
+        // For each category, get all stores directly assigned to it and its subcategories
+        foreach ($categories as $category) {
+            // Get stores directly assigned to the category
+            $categoryStores = $category->stores;
 
-            // Fetch the active category object to get subcategories
-            $activeCategoryObject = $categories->firstWhere('slug', $activeCategory);
-            $subcategories = $activeCategoryObject ? $activeCategoryObject->subcategories : [];
+            // Get stores assigned to its subcategories (if any)
+            $subcategoryStores = $category->subcategories->flatMap(function ($subcategory) {
+                return $subcategory->stores;
+            });
+
+            // Merge stores and ensure they are unique
+            $category->allStores = $categoryStores->merge($subcategoryStores)->unique('id');
         }
 
-        return view('frontend.pages.categories', compact('categories', 'stores', 'activeCategory', 'subcategories'));
+        // Return the view with the categories and their respective stores
+        return view('frontend.pages.categories', compact('categories'));
     }
-
 
 
     public function store()
@@ -180,24 +200,106 @@ class PagesController extends Controller
         return view('frontend.pages.stores', compact('organizedStores'));
     }
 
+    // public function storeDetail($slug)
+    // {
+    //     $store = Store::where('slug', $slug)->where('status', 1)->firstOrFail();
+    //     $popularStores = Store::where('popular_stores', true)->where('status', 1)->get();
+    //     $category = $store->category;
+
+    //     // Fetch the category associated with the store
+    //     $category = $store->category;
+
+    //     // Check if the store has a subcategory
+    //     if ($store->subcategory) {
+    //         // If the store has a subcategory, fetch related stores from that subcategory
+    //         $relatedStores = Store::where('subcategory_id', $store->subcategory->id)
+    //             ->where('id', '!=', $store->id)
+    //             ->where('status', 1)
+    //             ->get();
+    //     } elseif ($category) {
+    //         // If there is no subcategory, fall back to fetching related stores from the main category
+    //         $relatedStores = Store::where('category_id', $category->id)
+    //             ->where('id', '!=', $store->id)
+    //             ->where('status', 1)
+    //             ->get();
+    //     } else {
+    //         // If no category or subcategory, return an empty collection
+    //         $relatedStores = collect();
+    //     }
+    //     $coupons = $store->coupons()
+    //         ->where('status', 1)
+    //         ->orderBy('sort_order', 'asc')
+    //         ->get();
+
+    //     $metaTitle = htmlspecialchars($store->meta_title, ENT_QUOTES, 'UTF-8');
+    //     $metaDescription = htmlspecialchars($store->meta_description, ENT_QUOTES, 'UTF-8');
+
+    //     $metaKeywords = $store->meta_keywords;
+    //     if (is_string($metaKeywords)) {
+    //         $metaKeywords = json_decode($metaKeywords, true) ?? [];
+    //     } elseif (!is_array($metaKeywords)) {
+    //         $metaKeywords = [];
+    //     }
+    //     $metaKeywords = htmlspecialchars(implode(', ', $metaKeywords), ENT_QUOTES, 'UTF-8');
+
+    //     $faqs = $store->faqs;
+    //     if (is_string($faqs)) {
+    //         $faqs = json_decode($faqs, true) ?? [];
+    //     } elseif (!is_array($faqs)) {
+    //         $faqs = [];
+    //     }
+
+    //     return view('frontend.pages.store-detail', [
+    //         'store' => $store,
+    //         'popularStores' => $popularStores,
+    //         'relatedStores' => $relatedStores,
+    //         'coupons' => $coupons,
+    //         'metaTitle' => $metaTitle,
+    //         'metaDescription' => $metaDescription,
+    //         'metaKeywords' => $metaKeywords,
+    //         'faqs' => $faqs
+    //     ]);
+    // }
+
     public function storeDetail($slug)
     {
+        // Fetch the store by slug
         $store = Store::where('slug', $slug)->where('status', 1)->firstOrFail();
-        $popularStores = Store::where('popular_stores', true)->where('status', 1)->get();
-        $categories = Category::where('status', 1)->where('parent_id', null)->take(7)->get();
 
-        // Sort coupons by sort_order
+        // Fetch popular stores
+        $popularStores = Store::where('popular_stores', true)->where('status', 1)->get();
+
+        // Initialize relatedStores as an empty collection
+        $relatedStores = collect();
+
+        // Check if the store has a subcategory
+        if ($store->subcategory) {
+            // If the store has a subcategory, fetch related stores from that subcategory
+            $relatedStores = Store::where('subcategory_id', $store->subcategory->id)
+                ->where('id', '!=', $store->id)
+                ->where('status', 1)
+                ->get();
+        } else {
+            // If there is no subcategory, we can still fetch related stores from the main category
+            // This block is optional if you only want to show related stores based on the subcategory
+            // Uncomment the following lines if you want to show stores from the main category when no subcategory exists.
+            /*
+        if ($store->category) {
+            $relatedStores = Store::where('category_id', $store->category->id)
+                ->where('id', '!=', $store->id)
+                ->where('status', 1)
+                ->get();
+        }
+        */
+        }
+
+        // Fetch coupons associated with the store
         $coupons = $store->coupons()
             ->where('status', 1)
             ->orderBy('sort_order', 'asc')
             ->get();
 
-        // Sort deals by sort_order
-        $deals = $store->deals()
-            ->where('status', 1)
-            ->orderBy('sort_order', 'asc')
-            ->get();
-
+        // Prepare meta tags
         $metaTitle = htmlspecialchars($store->meta_title, ENT_QUOTES, 'UTF-8');
         $metaDescription = htmlspecialchars($store->meta_description, ENT_QUOTES, 'UTF-8');
 
@@ -209,6 +311,7 @@ class PagesController extends Controller
         }
         $metaKeywords = htmlspecialchars(implode(', ', $metaKeywords), ENT_QUOTES, 'UTF-8');
 
+        // Prepare FAQs
         $faqs = $store->faqs;
         if (is_string($faqs)) {
             $faqs = json_decode($faqs, true) ?? [];
@@ -216,12 +319,12 @@ class PagesController extends Controller
             $faqs = [];
         }
 
+        // Return the store detail view with the relevant data
         return view('frontend.pages.store-detail', [
             'store' => $store,
             'popularStores' => $popularStores,
-            'categories' => $categories,
+            'relatedStores' => $relatedStores,
             'coupons' => $coupons,
-            'deals' => $deals,
             'metaTitle' => $metaTitle,
             'metaDescription' => $metaDescription,
             'metaKeywords' => $metaKeywords,

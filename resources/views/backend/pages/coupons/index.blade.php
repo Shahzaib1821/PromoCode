@@ -10,13 +10,14 @@
                     @endif
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="card-title">Manage Coupons</h4>
+                            <h4 class="card-title">Manage Coupons and Deals</h4>
                             <div class="d-flex">
                                 <input type="text" id="storeFilter" class="form-control form-control-sm"
                                     placeholder="Filter by name">
                                 <button id="clearFilter" class="btn btn-soft-primary waves-effect waves-light w-50"><i
                                         class="bx bx-undo"></i>Clear</button>
                             </div>
+                            <div id="suggestions" class="suggestions-dropdown"></div>
                             <a href="{{ route('coupons.create') }}"
                                 class="btn btn-success btn-rounded waves-effect waves-light mb-2 me-2">
                                 <i class="bx bx-plus"></i> Add New Coupon
@@ -28,6 +29,7 @@
                             <thead>
                                 <tr>
                                     <th>Name</th>
+                                    <th>Type</th> <!-- New column for type -->
                                     <th>Code</th>
                                     <th>Store</th>
                                     <th>Sort Order</th>
@@ -38,20 +40,21 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($coupons as $coupon)
+                                @foreach ($coupons as $item)
                                     <tr>
-                                        <td>{{ $coupon->name }}</td>
-                                        <td>{{ $coupon->coupon_code }}</td>
-                                        <td>{{ $coupon->store->name }}</td>
-                                        <td>{{ $coupon->sort_order }}</td>
-                                        <td>{{ $coupon->status ? 'Active' : 'Inactive' }}</td>
-                                        <td>{{ $coupon->creator ? $coupon->creator->name : '' }}</td>
-                                        <td>{{ $coupon->updater ? $coupon->updater->name : '' }}</td>
+                                        <td>{{ $item->name ?? $item->deal_name }}</td>
+                                        <td>{{ isset($item->coupon_code) ? 'Coupon' : 'Deal' }}</td> <!-- Display type -->
+                                        <td>{{ $item->coupon_code ?? 'N/A' }}</td> <!-- Show 'N/A' for deals -->
+                                        <td>{{ $item->store ? $item->store->name : '' }}</td>
+                                        <td>{{ $item->sort_order ?? 'N/A' }}</td>
+                                        <td>{{ $item->status ? 'Active' : 'Inactive' }}</td>
+                                        <td>{{ $item->creator ? $item->creator->name : '' }}</td>
+                                        <td>{{ $item->updater ? $item->updater->name : '' }}</td>
                                         <td>
-                                            <a href="{{ route('coupons.edit', $coupon) }}"
+                                            <a href="{{ route('coupons.edit', $item) }}"
                                                 class="btn btn-soft-info waves-effect waves-light">
                                                 <i class="bx bx-pencil"></i> Edit</a>
-                                            <form action="{{ route('coupons.destroy', $coupon) }}" method="POST"
+                                            <form action="{{ route('coupons.destroy', $item) }}" method="POST"
                                                 class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
@@ -63,6 +66,7 @@
                                         </td>
                                     </tr>
                                 @endforeach
+
                             </tbody>
                         </table>
                     </div>

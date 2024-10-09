@@ -15,22 +15,21 @@ class StoreController extends Controller
 {
     public function index()
     {
-        $stores = Store::all();
-        $category = Category::all();
-        return view('backend.pages.stores.index', compact('stores'));
+        $stores = Store::with('categories')->get();
+        $categories = Category::all();
+
+        $stores = $stores->map(function ($store) {
+            $store->formatted_categories = $store->categories->pluck('name')->implode('<b>,</b><br>');
+            return $store;
+        });
+
+        return view('backend.pages.stores.index', compact('stores', 'categories'));
     }
     public function show($slug)
     {
         $store = Store::where('slug', $slug)->firstOrFail();
         return view('frontend.pages.store-detail', compact('store'));
     }
-
-    // public function create()
-    // {
-    //     $categories = Category::all();
-    //     $subcategories = SubCategory::all();
-    //     return view('backend.pages.stores.create', compact('categories', 'subcategories'));
-    // }
     public function create()
     {
         $categoryController = new CategoryController();
@@ -45,7 +44,8 @@ class StoreController extends Controller
             'slug' => 'required|string|max:255|unique:stores',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'tagline' => 'required|string|',
-            'category_id' => 'required|exists:categories,id',
+            'category_ids' => 'required|array',
+            'category_ids.*' => 'exists:categories,id',
             'description' => 'required|string',
             'top_stores' => 'boolean',
             'top_brands' => 'boolean',
@@ -87,6 +87,8 @@ class StoreController extends Controller
 
             $store = Store::create($validatedData);
 
+            $store->categories()->attach($request->category_ids);
+
             return redirect()->route('store.index')->with('success', 'Store created successfully.');
         } catch (\Exception $e) {
             // If an error occurs, delete the uploaded image if it exists
@@ -100,7 +102,7 @@ class StoreController extends Controller
 
     public function edit($id)
     {
-        $store = Store::findOrFail($id);
+        $store = Store::with('categories')->findOrFail($id);
         $categoryController = new CategoryController();
         $combined = $categoryController->getCombinedCategories();
         return view('backend.pages.stores.edit', compact('store', 'combined'));
@@ -113,7 +115,8 @@ class StoreController extends Controller
             'slug' => 'required|string|max:255|unique:stores,slug,' . $store->id,
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'tagline' => 'required|string',
-            'category_id' => 'required|exists:categories,id',
+            'category_ids' => 'required|array',
+            'category_ids.*' => 'exists:categories,id',
             'description' => 'required|string',
             'top_stores' => 'boolean',
             'top_brands' => 'boolean',
@@ -124,7 +127,7 @@ class StoreController extends Controller
             'faqs.*.answer' => 'required|string',
             'meta_title' => 'required|string|max:255',
             'meta_description' => 'required|string',
-            'meta_keywords' => 'required|string', // Keep it as string for validation
+            'meta_keywords' => 'required', // Keep it as string for validation
             'savings' => 'nullable|string|max:255',
             'discount' => 'nullable|string|max:255',
             'free_shipping' => 'nullable|string|max:255',
@@ -170,12 +173,13 @@ class StoreController extends Controller
             // Update the store
             $store->update($validatedData);
 
+            $store->categories()->sync($request->category_ids);
+
             return redirect()->route('store.index')->with('success', 'Store updated successfully.');
-        }  catch (\Exception $e) {
+        } catch (\Exception $e) {
             Log::error('Error updating store: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'An error occurred while updating the store. Please try again.');
         }
-
     }
 
     public function destroy($id)

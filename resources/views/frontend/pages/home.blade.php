@@ -25,10 +25,15 @@
                         <div class="row">
                             @foreach ($deals as $deal)
                                 <div class="col-lg-3 col-md-4 col-sm-6">
-                                    <a href="{{ route('stores-details', ['slug' => $deal->store->slug]) }}" class="text-black">
+                                    <a href="{{ route('stores-details', ['slug' => $deal->store->slug]) }}"
+                                        class="text-black">
                                         <div class="card p-0 card-horizontal">
-                                            <img src="{{ asset('uploads/stores/' . $deal->store->image) }}"
-                                                alt="{{ $deal->store->name }}" class="card-img-top">
+                                            {{-- <img src="{{ asset('uploads/stores/' . $deal->store->image) }}"
+                                                alt="{{ $deal->store->name }}" class="card-img-top"> --}}
+                                            <a href="{{ route('stores-details', ['slug' => $deal->store->slug]) }}"
+                                                style="background-image: url('{{ asset('uploads/stores/' . $deal->store->image) }}'); background-repeat: no-repeat; background-size: cover; width: 100%; height: 150px; border-bottom: 1px solid #8080802e; background-color: #ddd9d94a; background-position: center center">
+
+                                            </a>
                                             <div class="card-body">
                                                 <h5 class="card-title">{{ $deal->store->name }}</h5>
                                                 <p class="card-text">Get Discount of {{ $deal->discounted_price }}</p>

@@ -12,28 +12,30 @@
         <div class="container">
             <div class="row custom-gutters-60">
                 <div class="col-lg-8">
-                    @if(isset($query))
+                    @if (isset($query))
                         <h2>Search Results for: {{ $query }}</h2>
                     @endif
                     <div class="row">
                         @forelse ($blogs as $post)
                             <div class="col-lg-6">
-                                <div class="single-blog-content">
-                                    <div class="thumb">
-                                        <img src="{{ asset('uploads/blog/' . $post->image) }}" alt="blog">
+                                <a href="{{ route('blog-details', ['slug' => $post->slug]) }}">
+                                    <div class="single-blog-content">
+                                        <div class="thumb">
+                                            <img src="{{ asset('uploads/blog/' . $post->image) }}" alt="blog">
+                                        </div>
+                                        <div class="single-blog-details">
+                                            <ul class="post-meta">
+                                                <li class="admin"><i class="fas fa-user me-3"></i> Admin</li>
+                                                <li><i class="far fa-calendar-alt"></i>
+                                                    {{ $post->created_at->format('F d, Y') }}</li>
+                                            </ul>
+                                            <h5>{{ Str::limit(strip_tags($post->name), 45) }}</h5>
+                                            <p>{{ Str::limit(strip_tags($post->short_description), 280) }}</p>
+                                            <span>Read More <i class="la la-long-arrow-right"></i></span>
+                                        </div>
                                     </div>
-                                    <div class="single-blog-details">
-                                        <ul class="post-meta">
-                                            <li class="admin"><i class="fas fa-user me-3"></i> Admin</li>
-                                            <li><i class="far fa-calendar-alt"></i>
-                                                {{ $post->created_at->format('F d, Y') }}</li>
-                                        </ul>
-                                        <h5><a href="{{ route('blog-details', ['slug' => $post->slug]) }}">{{ Str::limit(strip_tags($post->name), 45) }}</a></h5>
-                                        <p>{{ Str::limit(strip_tags($post->short_description), 280) }}</p>
-                                        <a href="{{ route('blog-details', ['slug' => $post->slug]) }}">Read More <span><i
-                                                    class="la la-long-arrow-right"></i></span></a>
-                                    </div>
-                                </div>
+                                </a>
+
                             </div>
                         @empty
                             <div class="col-12">
@@ -52,7 +54,8 @@
                         <div class="widget widget_search">
                             <form class="search-form" action="{{ route('blogs.search') }}" method="GET">
                                 <div class="form-group">
-                                    <input type="text" name="query" placeholder="Search" value="{{ request('query') }}">
+                                    <input type="text" name="query" placeholder="Search"
+                                        value="{{ request('query') }}">
                                 </div>
                                 <button class="submit-btn" type="submit"><i class="fa fa-search"></i></button>
                             </form>
@@ -61,7 +64,9 @@
                             <h2 class="widget-title">Category</h2>
                             <ul>
                                 @foreach ($categories as $category)
-                                    <li><a href="{{ route('blogs', ['category' => $category->slug]) }}">{{ $category->name }}</a></li>
+                                    <li><a
+                                            href="{{ route('blogs', ['category' => $category->slug]) }}">{{ $category->name }}</a>
+                                    </li>
                                 @endforeach
                             </ul>
                         </div>
@@ -70,7 +75,8 @@
                             <ul>
                                 @foreach ($archives as $archive)
                                     <li>
-                                        <a href="{{ route('blogs', ['archive' => Carbon\Carbon::parse($archive)->format('Y-m')]) }}">
+                                        <a
+                                            href="{{ route('blogs', ['archive' => Carbon\Carbon::parse($archive)->format('Y-m')]) }}">
                                             {{ $archive }}
                                         </a>
                                     </li>

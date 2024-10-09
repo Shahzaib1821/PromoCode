@@ -4,7 +4,7 @@
 <section class="section">
     <div class="container">
         <div class="store-alphabets m30top text-center">
-            <ul class="d-flex justify-content-center flex-wrap gap-1">
+            <ul class="d-flex justify-content-center flex-wrap gap-1 p-0">
                 <li class="mt-2"><a class="list-style-none stores-alphabets" href="#">ALL</a></li>
                 @foreach (range('A', 'Z') as $letter)
                     <li class="mt-2"><a class="list-style-none stores-alphabets" href="#{{ $letter }}">{{ $letter }}</a></li>

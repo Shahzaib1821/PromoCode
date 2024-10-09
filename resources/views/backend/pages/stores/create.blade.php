@@ -64,9 +64,8 @@
 
                             <div class="col-lg-6">
                                 <div class="form-group mb-4">
-                                    <label for="category-select">Category :</label>
-                                    <select name="category_id" id="category-select" class="form-select" required>
-                                        <option value="">Select a category</option>
+                                    <label for="category-select">Categories :</label>
+                                    <select name="category_ids[]" id="category-select" class="form-select" multiple required>
                                         @foreach ($combined as $item)
                                             <option value="{{ $item->id }}">
                                                 @if ($item->is_subcategory)
@@ -77,7 +76,7 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error('category_id')
+                                    @error('category_ids')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
@@ -267,28 +266,41 @@
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             $('#description-textarea').summernote({
                 height: 200,
 
                 // font size
-                  fontSize: ['8px', '10px', '12px', '14px', '16px', '18px', '20px', '22px', '24px', '26px', '28px', '30px']
+                fontSize: ['8px', '10px', '12px', '14px', '16px', '18px', '20px', '22px', '24px', '26px',
+                    '28px', '30px'
+                ]
 
             });
 
-            // // Initialize Select2
-            // $('#meta-keywords').select2({
-            //     tags: true,
-            //     tokenSeparators: [',', ''],
-            //     createTag: function(params) {
-            //         return {
-            //             id: params.term,
-            //             text: params.term
-            //         };
-            //     }
-            // });
+            $(document).ready(function() {
+                $('#category-select').select2({
+                    placeholder: 'Select categories',
+                    allowClear: true,
+                    templateResult: formatCategory
+                });
+
+                function formatCategory(category) {
+                    if (!category.element) {
+                        return category.text;
+                    }
+                    var $category = $(
+                        '<span>' + category.text + '</span>'
+                    );
+                    if ($(category.element).hasClass('main-category')) {
+                        $category.css('font-weight', 'bold');
+                    }
+                    return $category;
+                }
+            });
 
             // Add FAQ functionality with plain JavaScript
             let faqCount = 1;
