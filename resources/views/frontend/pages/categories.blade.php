@@ -11,27 +11,29 @@
                         <h4 class="mb-4">Categories</h4>
                         @foreach ($categories as $category)
                             <li class="category-nav-item" role="presentation">
-                                <!-- Main Category Button -->
-                                <button class="category-nav-link nav-link {{ $loop->first ? 'active' : '' }}"
-                                    id="{{ $category->slug }}-tab" data-bs-toggle="tab"
-                                    data-bs-target="#{{ $category->slug }}" type="button" role="tab"
-                                    aria-controls="{{ $category->slug }}"
-                                    aria-selected="{{ $loop->first ? 'true' : 'false' }}">
-                                    {{ $category->name }}
-                                </button>
 
                                 <!-- Subcategories if they exist -->
                                 @if ($category->subcategories->isNotEmpty())
-                                    <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#subcategory-{{ $category->id }}" aria-expanded="false"
-                                        aria-controls="subcategory-{{ $category->id }}">
-                                        Subcategories
+                                    <!-- Main Category Button -->
+                                    <button
+                                        class="category-nav-link nav-link {{ $category->slug == $activeCategorySlug ? 'active' : '' }}"
+                                        id="{{ $category->slug }}-tab" data-bs-toggle="tab"
+                                        data-bs-target="#{{ $category->slug }}" type="button" role="tab"
+                                        aria-controls="{{ $category->slug }}"
+                                        aria-selected="{{ $category->slug == $activeCategorySlug ? 'true' : 'false' }}">
+                                        {{ $category->name }}
+
+                                        <a class="btn btn-link dropdown-toggle ps-0 py-0" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#subcategory-{{ $category->id }}" aria-expanded="false"
+                                            aria-controls="subcategory-{{ $category->id }}">
+
+                                        </a>
                                     </button>
                                     <div class="collapse" id="subcategory-{{ $category->id }}">
                                         <ul class="subcategory-list ps-3 mt-2">
                                             @foreach ($category->subcategories as $subcategory)
                                                 <li class="subcategory-item">
-                                                    <button class="subcategory-nav-link nav-link"
+                                                    <button class="category-nav-link nav-link"
                                                         id="{{ $subcategory->slug }}-tab" data-bs-toggle="tab"
                                                         data-bs-target="#{{ $subcategory->slug }}" type="button"
                                                         role="tab" aria-controls="{{ $subcategory->slug }}">
@@ -41,6 +43,15 @@
                                             @endforeach
                                         </ul>
                                     </div>
+                                @elseif ($category->subcategories->isEmpty())
+                                    <button
+                                        class="category-nav-link nav-link {{ $category->slug == $activeCategorySlug ? 'active' : '' }}"
+                                        id="{{ $category->slug }}-tab" data-bs-toggle="tab"
+                                        data-bs-target="#{{ $category->slug }}" type="button" role="tab"
+                                        aria-controls="{{ $category->slug }}"
+                                        aria-selected="{{ $category->slug == $activeCategorySlug ? 'true' : 'false' }}">
+                                        {{ $category->name }}
+                                    </button>
                                 @endif
                             </li>
                         @endforeach
@@ -53,8 +64,8 @@
                 <div class="tab-content" id="storeTabsContent">
                     @foreach ($categories as $category)
                         <!-- Main Category Tab Content -->
-                        <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="{{ $category->slug }}"
-                            role="tabpanel" aria-labelledby="{{ $category->slug }}-tab">
+                        <div class="tab-pane fade {{ $category->slug == $activeCategorySlug ? 'show active' : '' }}"
+                            id="{{ $category->slug }}" role="tabpanel" aria-labelledby="{{ $category->slug }}-tab">
                             <h3 class="mb-4">{{ $category->name }} Stores</h3>
                             <div class="row" id="{{ $category->slug }}-stores">
                                 <!-- Show only stores for this main category -->
@@ -104,21 +115,19 @@
     </div>
 @endsection
 
-
 @section('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Handle tab switching
-        document.querySelectorAll('.category-nav-link, .subcategory-nav-link').forEach(tab => {
-            tab.addEventListener('click', function() {
-                const targetId = this.getAttribute('data-bs-target').slice(1);
-                document.querySelectorAll('.tab-pane').forEach(pane => {
-                    pane.classList.remove('show', 'active');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle tab switching
+            document.querySelectorAll('.category-nav-link, .subcategory-nav-link').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-bs-target').slice(1);
+                    document.querySelectorAll('.tab-pane').forEach(pane => {
+                        pane.classList.remove('show', 'active');
+                    });
+                    document.getElementById(targetId).classList.add('show', 'active');
                 });
-                document.getElementById(targetId).classList.add('show', 'active');
             });
         });
-    });
-</script>
-
+    </script>
 @endsection

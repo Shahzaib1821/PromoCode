@@ -6,6 +6,27 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title mb-4">Create New Store</h4>
+                    @if (session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    @if (session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
 
                     <form action="{{ route('store.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
@@ -65,7 +86,8 @@
                             <div class="col-lg-6">
                                 <div class="form-group mb-4">
                                     <label for="category-select">Categories :</label>
-                                    <select name="category_ids[]" id="category-select" class="form-select" multiple required>
+                                    <select name="category_ids[]" id="category-select" class="form-select" multiple
+                                        required>
                                         @foreach ($combined as $item)
                                             <option value="{{ $item->id }}">
                                                 @if ($item->is_subcategory)
@@ -87,7 +109,7 @@
                             <div class="col-lg-6">
                                 <div class="form-group mb-4">
                                     <label for="website-input">Website URL:</label>
-                                    <input type="url" class="form-control @error('website') is-invalid @enderror"
+                                    <input type="url" class="form-control @error('  ') is-invalid @enderror"
                                         id="website-input" name="website" placeholder="Enter Store Website">
                                     @error('website')
                                         <span class="invalid-feedback" role="alert">
@@ -205,50 +227,6 @@
                                 </div>
                             </div>
 
-                            <h4 class="text-dark mb-4">Chart Info</h4>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="form-group mb-4">
-                                        <label for="savings-title">Savings</label>
-                                        <input type="text" class="form-control @error('savings') is-invalid @enderror"
-                                            id="savings-title" name="savings" placeholder="Enter Saving" required>
-                                        @error('savings')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="form-group mb-4">
-                                        <label for="discount-title">Discounted Price</label>
-                                        <input type="text"
-                                            class="form-control @error('discount') is-invalid @enderror"
-                                            id="discount-title" name="discount" placeholder="Enter Discount" required>
-                                        @error('discount')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                {{-- Free shipings --}}
-                                <div class="col-lg-6">
-                                    <div class="form-group mb-4">
-                                        <label for="free-shipping-title">Free Shipping</label>
-                                        <select name="free_shipping" class="form-select">
-                                            <option value="Yes" selected="selected">Yes</option>
-                                            <option value="No">No</option>
-                                        </select>
-                                        @error('free_shipping')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-
                             <div class="row justify-content-end">
                                 <div class="col-sm-12">
                                     <div>
@@ -268,7 +246,7 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             $('#description-textarea').summernote({

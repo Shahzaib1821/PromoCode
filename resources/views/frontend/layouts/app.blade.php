@@ -3,10 +3,11 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>{{ $settings['site_title'] ?? 'Default Title' }} | Promo Code</title>
+    <title>{{ $metaTitle ?? 'Saving Fusion' }} | Promo Code</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{ $metaDescription ?? 'Default description' }}">
     <meta name="keywords" content="{{ $metaKeywords ?? 'Default keywords' }}">
+    <link rel="canonical" href="{{ URL::current() }}">
     <meta content="Themesbrand" name="author" />
 
     @include('frontend.layouts.includes.head')
@@ -25,7 +26,7 @@
         h2 { font-size: {{ $settings['h2_font_size'] ?? '28' }}px; !important; }
         h3 { font-size: {{ $settings['h3_font_size'] ?? '24' }}px; !important; }
         h4 { font-size: {{ $settings['h4_font_size'] ?? '20' }}px; !important; }
-        h5 { font-size: {{ $settings['h5_font_size'] ?? '18' }}px; !important; } 
+        h5 { font-size: {{ $settings['h5_font_size'] ?? '18' }}px; !important; }
         h6 { font-size: {{ $settings['h6_font_size'] ?? '16' }}px; !important; }
         p { font-size: {{ $settings['p_font_size'] ?? '16' }}px; }
         span { font-size: {{ $settings['span_font_size'] ?? '14' }}px; }

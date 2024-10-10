@@ -43,7 +43,7 @@ class BlogsController extends Controller
 
         $validatedData['slug'] = Str::slug($validatedData['name']);
         $validatedData['faqs'] = isset($validatedData['faqs']) ? json_encode($validatedData['faqs']) : null;
-        $validatedData['meta_keywords'] = json_encode($validatedData['meta_keywords']);
+        // $validatedData['meta_keywords'] = json_encode($validatedData['meta_keywords']);
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -87,7 +87,6 @@ class BlogsController extends Controller
         ]);
 
         $validatedData['slug'] = Str::slug($validatedData['name']);
-        $validatedData['meta_keywords'] = explode(',', $request->meta_keywords);
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');

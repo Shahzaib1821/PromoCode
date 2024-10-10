@@ -56,8 +56,8 @@ class StoreController extends Controller
             'faqs.*.answer' => 'required|string',
             'meta_title' => 'required|string|max:255',
             'meta_description' => 'required|string',
-            'meta_keywords' => 'required|string',
-            // 'meta_keywords.*' => 'string',
+            'meta_keywords' => 'required|array',
+            'meta_keywords.*' => 'string',
             'website' => 'nullable|url|max:255',
             'video' => 'nullable|string',
         ]);
@@ -72,7 +72,7 @@ class StoreController extends Controller
             }
 
             $validatedData['faqs'] = isset($validatedData['faqs']) ? json_encode($validatedData['faqs']) : null;
-            // $validatedData['meta_keywords'] = json_encode($validatedData['meta_keywords']);
+            $validatedData['meta_keywords'] = json_encode($validatedData['meta_keywords']);
 
             $validatedData['top_stores'] = $request->has('top_stores');
             $validatedData['top_brands'] = $request->has('top_brands');
@@ -124,7 +124,7 @@ class StoreController extends Controller
             'faqs.*.answer' => 'required|string',
             'meta_title' => 'required|string|max:255',
             'meta_description' => 'required|string',
-            'meta_keywords' => 'required|string',
+            'meta_keywords' => 'required', 
             'website' => 'nullable|url|max:255',
             'video' => 'nullable|string',
         ]);
@@ -162,7 +162,7 @@ class StoreController extends Controller
             }
 
             // Convert meta keywords from string to array and encode to JSON
-            // $validatedData['meta_keywords'] = json_encode(array_map('trim', explode(',', $validatedData['meta_keywords'])));
+            $validatedData['meta_keywords'] = json_encode(array_map('trim', explode(',', $validatedData['meta_keywords'])));
 
             // Update the store
             $store->update($validatedData);

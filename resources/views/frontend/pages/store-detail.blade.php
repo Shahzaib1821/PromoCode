@@ -38,28 +38,20 @@
                 <table class="w-full table table-bordered">
                     <tbody>
                         <tr>
-                            <td class="py-2">You can save upto</td>
-                            <td class="py-2">{{ $store->savings ?? '$50.00' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="py-2">Total Offers</td>
+                            <td class="py-2" style="font-size: 15px;">Total Offers</td>
                             <td class="py-2">{{ $coupons->count() }}</td>
                         </tr>
                         <tr>
-                            <td class="py-2">Coupon Codes</td>
+                            <td class="py-2" style="font-size: 15px;">Coupons</td>
                             <td class="py-2">{{ $coupons->count() }}</td>
                         </tr>
                         <tr>
-                            <td class="py-2">Free Shipping</td>
+                            <td class="py-2" style="font-size: 15px;">Free Shipping</td>
                             <td class="py-2">{{ $store->free_shipping ?? 'Yes' }}</td>
                         </tr>
                         <tr>
-                            <td class="py-2">Best Discount</td>
-                            <td class="py-2">{{ $store->discount ?? '70% Off' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="py-2">Last Updated</td>
-                            <td class="py-2">{{ now()->format('d M, Y') }}</td>
+                            <td class="py-2" style="font-size: 15px;">Last Updated</td>
+                            <td class="py-2" style="font-size: 15px;">{{ now()->format('d M, Y') }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -75,14 +67,15 @@
                 <h4>Related Stores</h4>
                 <ul class="list-unstyled">
                     @forelse ($relatedStores as $relatedStore)
-                        <li><a
-                                href="{{ route('stores-details', ['slug' => $relatedStore->slug]) }}">{{ $relatedStore->name }}</a>
+                        <li>
+                            <a href="{{ route('stores-details', ['slug' => $relatedStore->slug]) }}">
+                                {{ $relatedStore->name }}
+                            </a>
                         </li>
                     @empty
                         <li>No related stores found.</li>
                     @endforelse
                 </ul>
-
             </div>
 
             <main class="col-sm-12 col-md-12 col-lg-8">

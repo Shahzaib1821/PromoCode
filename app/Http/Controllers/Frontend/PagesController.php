@@ -82,14 +82,7 @@ class PagesController extends Controller
 
         $metaTitle = htmlspecialchars($blog->meta_title, ENT_QUOTES, 'UTF-8');
         $metaDescription = htmlspecialchars($blog->meta_description, ENT_QUOTES, 'UTF-8');
-
-        $metaKeywords = $blog->meta_keywords;
-        if (is_string($metaKeywords)) {
-            $metaKeywords = json_decode($metaKeywords, true) ?? [];
-        } elseif (!is_array($metaKeywords)) {
-            $metaKeywords = [];
-        }
-        $metaKeywords = htmlspecialchars(implode(', ', $metaKeywords), ENT_QUOTES, 'UTF-8');
+        $metaKeywords = htmlspecialchars($blog->meta_keywords, ENT_QUOTES, 'UTF-8');
 
         $faqs = $blog->faqs;
         if (is_string($faqs)) {
@@ -144,45 +137,24 @@ class PagesController extends Controller
         return view('frontend.pages.saving-tips', compact('popularStores'));
     }
 
-    // public function category(Request $request)
-    // {
-    //     $categories = Category::with(['subcategories', 'stores'])
-    //         ->whereNull('parent_id')
-    //         ->orWhere('parent_id', 0)
-    //         ->get();
-
-    //     foreach ($categories as $category) {
-    //         $category->allStores = $category->stores->concat(
-    //             $category->subcategories->flatMap->stores
-    //         )->unique('id');
-    //     }
-
-    //     return view('frontend.pages.categories', compact('categories'));
-    // }
-
     public function category(Request $request)
     {
-        // Load categories with subcategories and stores (eager load relationships)
         $categories = Category::with(['subcategories', 'stores'])->whereNull('parent_id')->get();
 
-        // For each category, get all stores directly assigned to it and its subcategories
         foreach ($categories as $category) {
-            // Get stores directly assigned to the category
             $categoryStores = $category->stores;
 
-            // Get stores assigned to its subcategories (if any)
             $subcategoryStores = $category->subcategories->flatMap(function ($subcategory) {
                 return $subcategory->stores;
             });
 
-            // Merge stores and ensure they are unique
             $category->allStores = $categoryStores->merge($subcategoryStores)->unique('id');
         }
 
-        // Return the view with the categories and their respective stores
-        return view('frontend.pages.categories', compact('categories'));
-    }
+        $activeCategorySlug = $request->input('active', $categories->first()->slug);
 
+        return view('frontend.pages.categories', compact('categories', 'activeCategorySlug'));
+    }
 
     public function store()
     {
@@ -200,100 +172,40 @@ class PagesController extends Controller
         return view('frontend.pages.stores', compact('organizedStores'));
     }
 
-    // public function storeDetail($slug)
-    // {
-    //     $store = Store::where('slug', $slug)->where('status', 1)->firstOrFail();
-    //     $popularStores = Store::where('popular_stores', true)->where('status', 1)->get();
-    //     $category = $store->category;
-
-    //     // Fetch the category associated with the store
-    //     $category = $store->category;
-
-    //     // Check if the store has a subcategory
-    //     if ($store->subcategory) {
-    //         // If the store has a subcategory, fetch related stores from that subcategory
-    //         $relatedStores = Store::where('subcategory_id', $store->subcategory->id)
-    //             ->where('id', '!=', $store->id)
-    //             ->where('status', 1)
-    //             ->get();
-    //     } elseif ($category) {
-    //         // If there is no subcategory, fall back to fetching related stores from the main category
-    //         $relatedStores = Store::where('category_id', $category->id)
-    //             ->where('id', '!=', $store->id)
-    //             ->where('status', 1)
-    //             ->get();
-    //     } else {
-    //         // If no category or subcategory, return an empty collection
-    //         $relatedStores = collect();
-    //     }
-    //     $coupons = $store->coupons()
-    //         ->where('status', 1)
-    //         ->orderBy('sort_order', 'asc')
-    //         ->get();
-
-    //     $metaTitle = htmlspecialchars($store->meta_title, ENT_QUOTES, 'UTF-8');
-    //     $metaDescription = htmlspecialchars($store->meta_description, ENT_QUOTES, 'UTF-8');
-
-    //     $metaKeywords = $store->meta_keywords;
-    //     if (is_string($metaKeywords)) {
-    //         $metaKeywords = json_decode($metaKeywords, true) ?? [];
-    //     } elseif (!is_array($metaKeywords)) {
-    //         $metaKeywords = [];
-    //     }
-    //     $metaKeywords = htmlspecialchars(implode(', ', $metaKeywords), ENT_QUOTES, 'UTF-8');
-
-    //     $faqs = $store->faqs;
-    //     if (is_string($faqs)) {
-    //         $faqs = json_decode($faqs, true) ?? [];
-    //     } elseif (!is_array($faqs)) {
-    //         $faqs = [];
-    //     }
-
-    //     return view('frontend.pages.store-detail', [
-    //         'store' => $store,
-    //         'popularStores' => $popularStores,
-    //         'relatedStores' => $relatedStores,
-    //         'coupons' => $coupons,
-    //         'metaTitle' => $metaTitle,
-    //         'metaDescription' => $metaDescription,
-    //         'metaKeywords' => $metaKeywords,
-    //         'faqs' => $faqs
-    //     ]);
-    // }
-
     public function storeDetail($slug)
     {
-        // Fetch the store by slug
         $store = Store::where('slug', $slug)->where('status', 1)->firstOrFail();
 
-        // Fetch popular stores
-        $popularStores = Store::where('popular_stores', true)->where('status', 1)->get();
+        $popularStores = Store::where('popular_stores', true)
+            ->where('status', 1)
+            ->get();
 
-        // Initialize relatedStores as an empty collection
         $relatedStores = collect();
 
-        // Check if the store has a subcategory
-        if ($store->subcategory) {
-            // If the store has a subcategory, fetch related stores from that subcategory
-            $relatedStores = Store::where('subcategory_id', $store->subcategory->id)
-                ->where('id', '!=', $store->id)
+        if ($store->subcategory_id) {
+            $relatedStores = Store::where('id', '!=', $store->id)
                 ->where('status', 1)
+                ->where('subcategory_id', $store->subcategory_id)
+                ->whereHas('categories', function ($query) use ($store) {
+                    $query->whereIn('categories.id', $store->categories->pluck('id'));
+                })
+                ->latest()
+                ->take(5)
                 ->get();
-        } else {
-            // If there is no subcategory, we can still fetch related stores from the main category
-            // This block is optional if you only want to show related stores based on the subcategory
-            // Uncomment the following lines if you want to show stores from the main category when no subcategory exists.
-            /*
-        if ($store->category) {
-            $relatedStores = Store::where('category_id', $store->category->id)
-                ->where('id', '!=', $store->id)
-                ->where('status', 1)
-                ->get();
-        }
-        */
         }
 
-        // Fetch coupons associated with the store
+        if ($relatedStores->isEmpty()) {
+            $mainCategoryIds = $store->categories()->pluck('categories.id');
+            $relatedStores = Store::where('id', '!=', $store->id)
+                ->where('status', 1)
+                ->whereHas('categories', function ($query) use ($mainCategoryIds) {
+                    $query->whereIn('categories.id', $mainCategoryIds);
+                })
+                ->latest()
+                ->take(5)
+                ->get();
+        }
+
         $coupons = $store->coupons()
             ->where('status', 1)
             ->orderBy('sort_order', 'asc')
@@ -302,14 +214,7 @@ class PagesController extends Controller
         // Prepare meta tags
         $metaTitle = htmlspecialchars($store->meta_title, ENT_QUOTES, 'UTF-8');
         $metaDescription = htmlspecialchars($store->meta_description, ENT_QUOTES, 'UTF-8');
-
-        $metaKeywords = $store->meta_keywords;
-        if (is_string($metaKeywords)) {
-            $metaKeywords = json_decode($metaKeywords, true) ?? [];
-        } elseif (!is_array($metaKeywords)) {
-            $metaKeywords = [];
-        }
-        $metaKeywords = htmlspecialchars(implode(', ', $metaKeywords), ENT_QUOTES, 'UTF-8');
+        $metaKeywords = htmlspecialchars($store->meta_keywords, ENT_QUOTES, 'UTF-8');
 
         // Prepare FAQs
         $faqs = $store->faqs;
@@ -361,7 +266,6 @@ class PagesController extends Controller
         $popularStores = Store::where('popular_stores', true)->where('status', 1)->get();
         return view('frontend.pages.terms-and-conditions', compact('popularStores'));
     }
-
     public function writeForUs()
     {
         $popularStores = Store::where('popular_stores', true)->get();
@@ -374,7 +278,6 @@ class PagesController extends Controller
 
         return view('frontend.pages.privacy-policy', compact('popularStores'));
     }
-
     public function apiSearch(Request $request)
     {
         $query = $request->input('query');
