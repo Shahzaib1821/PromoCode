@@ -108,7 +108,7 @@
                     <div class="col-lg-12">
                         <div class="row">
                             @foreach ($stores as $store)
-                                <div class="col-lg-3 col-md-4 col-sm-6">
+                                <div class="col-lg-2 col-md-4 col-sm-6">
                                     <a href="{{ route('stores-details', ['slug' => $store->slug]) }}">
                                         <div class="store-card">
                                             <img src="{{ asset('uploads/stores/' . $store->image) }}"

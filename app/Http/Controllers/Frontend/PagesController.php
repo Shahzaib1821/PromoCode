@@ -24,7 +24,7 @@ class PagesController extends Controller
     public function home()
     {
         $categories = Category::where('status', 1)->where('parent_id', null)->take(7)->get();
-        $stores = Store::where('status', 1)->get();
+        $stores = Store::where('status', 1)->take(12)->latest()->get();
         $mainBlog = Blog::where('featured_blog', true)->where('status', 1)->get();
         $blogPosts = Blog::where('top_blog', true)->where('status', 1)->get();
         $saleBanner = Banner::where('is_active', true)->where('type', 'sale')->first();
